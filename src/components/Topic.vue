@@ -1,9 +1,5 @@
 <template>
-    <view
-        :class="{ visited: item.visited }"
-        class="topic-wrap"
-        @click="$emit('topicClick')"
-    >
+    <view :class="{ visited: item.visited }" class="topic-wrap">
         <AuthorInfo :item="item"></AuthorInfo>
         <view class="title">
             {{ item.title }}
@@ -18,6 +14,7 @@
 import { toRefs } from 'vue';
 import AuthorInfo from '@/components/AuthorInfo';
 import TopicTag from '@/components/TopicTag';
+
 const props = defineProps(['item']);
 const { item } = toRefs(props);
 </script>

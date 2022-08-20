@@ -51,12 +51,9 @@
                         v-for="(item, index) in list"
                         :key="index"
                         class="item"
+                        @click="getTopicsDetail(item.id)"
                     >
-                        <Topic
-                            :item="item"
-                            :visited="false"
-                            @topicClick="getTopicsDetail(item.id)"
-                        ></Topic>
+                        <Topic :item="item" :visited="false"></Topic>
                     </view>
                     <view class="no-more">没有了，去看看别的或休息一下吧</view>
                 </scroll-view>
@@ -69,7 +66,7 @@
 import Topic from '@/components/Topic';
 import Skeleton from '@/components/Skeleton';
 import NavBar from '@/components/NavBar';
-import { reactive, ref, toRefs } from 'vue';
+import { ref } from 'vue';
 import { useStore } from '../store';
 import { $getTabTopics } from '../service';
 import dayjs from 'dayjs';
@@ -192,7 +189,7 @@ const animationFinish = e => {
             flex-direction: column;
             .item {
                 white-space: normal;
-                margin-top: 20px;
+                margin-bottom: 20px;
                 display: inline-block;
                 width: 100%;
             }
