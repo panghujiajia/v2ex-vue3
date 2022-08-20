@@ -1,0 +1,444 @@
+<template>
+    <scroll-view
+        :scroll-y="true"
+        class="scroll-view"
+        scroll-with-animation
+        @touchmove.prevent.stop="
+            () => {
+                return false;
+            }
+        "
+    >
+        <view v-if="toastTitle" class="toast">{{ toastTitle }}</view>
+        <view class="top-wrap">
+            <view class="header">
+                <view class="header-info">
+                    <view class="avatar" @click="showTip()">
+                        <image
+                            :src="
+                                userInfo.avatar ||
+                                'https://cdn.todayhub.cn/lib/image/img-user-avatar.png'
+                            "
+                        />
+                    </view>
+                    <view class="info">
+                        <view>
+                            <view class="nick-name" @click="showTip()">
+                                {{ userInfo.username || '点击登录' }}
+                            </view>
+                            <view v-if="cookie" class="rank">
+                                {{ userInfo.info || '' }}
+                            </view>
+                            <view v-if="cookie" class="rank">
+                                {{ userInfo.sign_in_day || '' }}
+                            </view>
+                        </view>
+                        <view v-if="cookie" class="money">
+                            <template v-if="userInfo.balance">
+                                <template
+                                    v-for="(item, index) in userInfo.balance"
+                                >
+                                    <view v-if="item">
+                                        <image
+                                            :src="`https://cdn.todayhub.cn/lib/image/icon-balance${
+                                                userInfo.balance.length - index
+                                            }.png`"
+                                        ></image>
+                                        <text>{{ item }}</text>
+                                    </view>
+                                </template>
+                            </template>
+                        </view>
+                    </view>
+                </view>
+                <view v-if="userInfo.is_sign_in" class="btn-sign disabled">
+                    已签到
+                </view>
+                <view v-else class="btn-sign" @click="getSignIn()"> 签到 </view>
+            </view>
+        </view>
+        <view class="cell-group">
+            <view
+                class="cell van-hairline--bottom"
+                @click="navigateTo('history')"
+            >
+                <view>访问记录</view>
+                <view class="icon-arrow"></view>
+            </view>
+            <view
+                class="cell van-hairline--bottom"
+                @click="navigateTo('topic', true)"
+            >
+                <view>我的主题</view>
+                <view class="icon-arrow"></view>
+            </view>
+            <view
+                class="cell van-hairline--bottom"
+                @click="navigateTo('reply', true)"
+            >
+                <view>我的回复</view>
+                <view class="icon-arrow"></view>
+            </view>
+            <view
+                class="cell van-hairline--bottom"
+                @click="navigateTo('message', true)"
+            >
+                <view>我的消息</view>
+                <view class="dot-wrap">
+                    <view v-if="notifications" class="dot">
+                        {{ notifications }}
+                    </view>
+                    <view class="icon-arrow"></view>
+                </view>
+            </view>
+            <view
+                class="cell van-hairline--bottom"
+                @click="navigateTo('collect', true)"
+            >
+                <view>我的收藏</view>
+                <view class="icon-arrow"></view>
+            </view>
+            <view class="cell van-hairline--bottom">
+                <view>自动签到</view>
+                <switch
+                    :checked="autoSign"
+                    color="#ffc413"
+                    @change="onAutoSignChange"
+                />
+            </view>
+            <view class="cell van-hairline--bottom">
+                <view>
+                    <view>站内链接跳转</view>
+                    <view class="tip">
+                        点击"/t/1024、/go/v2ex"，打开对应帖子、节点
+                    </view>
+                </view>
+                <switch
+                    :checked="autoNavigate"
+                    color="#ffc413"
+                    @change="onAutoNavigateChange"
+                />
+            </view>
+            <view class="cell van-hairline--bottom">
+                <view>
+                    <view>使用我的代理</view>
+                    <view class="tip"> 直接请求v2ex官网，速度更快 </view>
+                </view>
+                <switch
+                    :checked="autoNavigate"
+                    color="#ffc413"
+                    @change="onAutoNavigateChange"
+                />
+            </view>
+            <view
+                v-if="cookie"
+                class="cell van-hairline--bottom"
+                @click="login()"
+            >
+                <view>重新登录</view>
+                <view class="icon-arrow"></view>
+            </view>
+            <view
+                class="cell van-hairline--bottom"
+                @click="navigateTo('about')"
+            >
+                <view>关于</view>
+                <view class="icon-arrow"></view>
+            </view>
+            <!-- #ifdef MP-WEIXIN -->
+            <ad unit-id="adunit-5dede007095ed080"></ad>
+            <!-- #endif -->
+        </view>
+    </scroll-view>
+</template>
+
+<script setup>
+import { useStore } from '../store';
+import { storeToRefs } from 'pinia';
+
+const store = useStore();
+
+let {
+    autoSign,
+    autoNavigate,
+    cookie,
+    toastTitle,
+    notifications,
+    v2exConfig,
+    userInfo
+} = storeToRefs(store);
+async function init() {
+    await store.getUserInfo();
+    await store.getUserBalance();
+    await store.getLoginRewardInfo();
+}
+init();
+
+function onAutoNavigateChange({ detail }) {
+    const { value } = detail;
+    uni.vibrateShort({});
+    store.toggleAutoNavigate(value);
+}
+
+function getSignIn() {
+    if (!cookie.value) {
+        uni.showToast({
+            title: '您需要登录才能进行签到哦！',
+            icon: 'none'
+        });
+        return;
+    }
+    store.getLoginReward();
+}
+function login() {
+    uni.navigateTo({ url: '/pages/Login' });
+}
+function onAutoSignChange({ detail }) {
+    const { value } = detail;
+    uni.vibrateShort({});
+    if (!cookie.value && value) {
+        uni.showToast({
+            title: '登录后才能为您自动签到哦！',
+            icon: 'none'
+        });
+        return;
+    }
+    store.toggleAutoSign(value);
+}
+function showTip() {
+    if (!cookie.value) {
+        login();
+        return;
+    }
+    if (toastTitle.value) {
+        return;
+    }
+    let len = v2exConfig.value.toast.length;
+    if (len) {
+        toastTitle.value =
+            v2exConfig.value.toast[Math.round(Math.random() * len)];
+        setTimeout(() => {
+            toastTitle.value = '';
+        }, 5000);
+    }
+}
+function navigateTo(key, auth = false) {
+    if (auth && !cookie.value) {
+        uni.showToast({
+            title: '您需要登录才能访问哦！',
+            icon: 'none'
+        });
+        return;
+    }
+    const urlList = {
+        history: '/pages/History',
+        topic: '/pages/UserTopic',
+        reply: '/pages/UserReply',
+        message: '/pages/UserMessage',
+        collect: '/pages/MyCollect',
+        about: '/pages/About'
+    };
+    if (!key) {
+        uni.showToast({
+            title: '...',
+            icon: 'none'
+        });
+        return;
+    }
+    const url = urlList[key];
+    if (['reply', 'topic'].includes(key)) {
+        uni.navigateTo({
+            url: `${url}?username=${userInfo.value.username}`
+        });
+        return;
+    }
+    uni.navigateTo({ url });
+}
+</script>
+<style lang="less" scoped>
+.scroll-view {
+    background: #efefef;
+    box-sizing: border-box;
+    position: relative;
+    height: 100%;
+    .toast {
+        position: absolute;
+        top: 40%;
+        left: 50%;
+        transform: translateX(-310px);
+        z-index: 99999;
+        background: rgba(0, 0, 0, 0.7);
+        border-radius: 20px;
+        padding: 20px;
+        color: #fff;
+        font-size: 28px;
+        width: 620px;
+        box-sizing: border-box;
+    }
+    .top-wrap {
+        height: 600px;
+        background: url(https://cdn.todayhub.cn/lib/image/bg-user-center.png)
+            50% no-repeat;
+        background-size: 100%;
+        .header {
+            height: 400px;
+            width: 690px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            .header-info {
+                display: flex;
+            }
+            .avatar {
+                width: 180px;
+                height: 180px;
+                border-radius: 50%;
+                overflow: hidden;
+                margin-right: 30px;
+                image {
+                    width: 180px;
+                    height: 180px;
+                }
+            }
+            .info {
+                width: 330px;
+                flex: 1;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                .nick-name {
+                    font-size: 40px;
+                    font-family: PingFangSC-Medium, PingFang SC;
+                    font-weight: 500;
+                    color: #ffffff;
+                    line-height: 56px;
+                }
+                .rank {
+                    font-size: 24px;
+                    font-family: PingFangSC-Regular, PingFang SC;
+                    font-weight: 400;
+                    color: #ffffff;
+                    line-height: 33px;
+                    margin: 10px 0;
+                }
+                .money {
+                    height: 40px;
+                    display: flex;
+                    align-items: center;
+                    margin-top: 30px;
+                    color: #fff;
+                    font-size: 24px;
+                    font-family: PingFangSC-Regular, PingFang SC;
+                    font-weight: 400;
+                    view {
+                        display: flex;
+                        align-items: center;
+                        margin-right: 15px;
+                    }
+                    image {
+                        width: 34px;
+                        height: 34px;
+                        margin-right: 5px;
+                    }
+                }
+            }
+            .btn-sign {
+                width: 143px;
+                height: 51px;
+                background: #ffc413;
+                border-radius: 26px;
+                font-size: 28px;
+                font-family: PingFangSC-Regular, PingFang SC;
+                font-weight: 400;
+                color: #ffffff;
+                line-height: 51px;
+                text-align: center;
+                &.disabled {
+                    background: #c3c3c3;
+                }
+            }
+        }
+    }
+}
+.dot-wrap {
+    display: flex;
+    align-items: center;
+    .dot {
+        border-radius: 20px;
+        padding: 0 16px;
+        background: #fa5151;
+        color: #fff;
+        font-size: 22px;
+        font-weight: bold;
+    }
+}
+.cell-group {
+    background: #fff;
+    width: 690px;
+    margin: 0 auto;
+    margin-top: -250px;
+    border-radius: 16px 16px 0 0;
+    position: relative;
+    box-sizing: border-box;
+    z-index: 2;
+    .tip {
+        color: #999;
+        font-size: 22px;
+    }
+    .icon-arrow {
+        position: relative;
+        width: 20px;
+        height: 20px;
+        &:after,
+        &:before {
+            content: '';
+            display: block;
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 2px;
+            height: 12px;
+            border-radius: 2px;
+            background: #ccc;
+            transform: rotateZ(-45deg);
+        }
+        &:after {
+            top: 8px;
+            transform: rotateZ(45deg);
+        }
+    }
+    .cell {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        height: 100px;
+        padding: 0 30px 0 40px;
+        box-sizing: border-box;
+        border-bottom: 1px solid #f0f0f0;
+        color: #282828;
+        font-size: 32px;
+        /deep/.uni-switch-input {
+            transform: scale(0.7);
+            margin-right: -10px;
+            &:after {
+                box-shadow: 0 0 4px rgb(0 0 0 / 40%);
+                height: 100%;
+            }
+            &:before {
+                height: 100%;
+                width: 100%;
+                background: #fff;
+            }
+        }
+        text {
+            font-size: 24px;
+            color: #999;
+            line-height: 100px;
+        }
+        &:last-child {
+            border-bottom: 0 none;
+        }
+    }
+}
+</style>
