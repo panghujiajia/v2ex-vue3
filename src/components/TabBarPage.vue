@@ -40,12 +40,6 @@ let { currentTabBar } = toRefs(store);
         & > view {
             height: 100%;
         }
-        .index-wrap {
-            background: #f5f5f5;
-        }
-        .tag-wrap {
-            background: #fff;
-        }
     }
 }
 </style>

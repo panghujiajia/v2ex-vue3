@@ -1,35 +1,8 @@
 {
-    //    "tabBar": {
-    //        "color": "#999999",
-    //        "selectedColor": "#4474FF",
-    //        "borderStyle": "black",
-    //        "backgroundColor": "#ffffff",
-    //        "list": [
-    //            {
-    //                "pagePath": "pages/Index",
-    //                "iconPath": "static/icons/top-bright.png",
-    //                "selectedIconPath": "static/icons/top-cur.png",
-    //                "text": "热门"
-    //            },
-    //            {
-    //                "pagePath": "pages/Tags",
-    //                "iconPath": "static/icons/all-bright.png",
-    //                "selectedIconPath": "static/icons/all-cur.png",
-    //                "text": "全部"
-    //            },
-    //            {
-    //                "pagePath": "pages/My",
-    //                "iconPath": "static/icons/user-bright.png",
-    //                "selectedIconPath": "static/icons/user-cur.png",
-    //                "text": "我的"
-    //            }
-    //        ]
-    //    },
     "pages": [
         {
             "path": "components/TabBarPage",
             "style": {
-                "backgroundColor": "#fff",
                 // #ifdef H5
                 "navigationStyle": "custom"
                 // #endif H5
@@ -38,7 +11,6 @@
         {
             "path": "pages/Detail",
             "style": {
-                "backgroundColor": "#fff",
                 "enablePullDownRefresh": true,
                 // #ifdef H5
                 "navigationStyle": "custom"
@@ -48,7 +20,24 @@
         {
             "path": "pages/Tag",
             "style": {
-                "backgroundColor": "#fff",
+                "enablePullDownRefresh": true,
+                // #ifdef H5
+                "navigationStyle": "custom"
+                // #endif H5
+            }
+        },
+        {
+            "path": "pages/UserTopic",
+            "style": {
+                "enablePullDownRefresh": true,
+                // #ifdef H5
+                "navigationStyle": "custom"
+                // #endif H5
+            }
+        },
+        {
+            "path": "pages/History",
+            "style": {
                 // #ifdef H5
                 "navigationStyle": "custom"
                 // #endif H5
@@ -57,7 +46,6 @@
         {
             "path": "pages/About",
             "style": {
-                "backgroundColor": "#fff",
                 // #ifdef H5
                 "navigationStyle": "custom"
                 // #endif H5
@@ -66,7 +54,6 @@
         {
             "path": "pages/Login",
             "style": {
-                "backgroundColor": "#fff",
                 // #ifdef H5
                 "navigationStyle": "custom"
                 // #endif H5

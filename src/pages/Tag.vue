@@ -1,57 +1,47 @@
 <template>
     <view class="container">
-        <template v-if="loading && loadType === 'refresh'">
-            <Skeleton></Skeleton>
-        </template>
-        <template v-else>
-            <view v-if="!list.length" class="load-failed">
-                <view class="reload">
-                    <image
-                        class="empty-img"
-                        src="https://img01.yzcdn.cn/vant/empty-image-error.png"
-                    >
-                    </image>
-                    <view class="empty-desc">
-                        加载失败，该节点可能需要登录才能访问哦
-                    </view>
-                    <view class="empty-button" @click="getAllTopics()">
-                        再试一次
-                    </view>
+        <Skeleton v-if="loading && loadType === 'refresh'"></Skeleton>
+        <view v-else-if="!list.length" class="load-failed">
+            <view class="reload">
+                <image
+                    class="empty-img"
+                    src="https://img01.yzcdn.cn/vant/empty-image-error.png"
+                >
+                </image>
+                <view class="empty-desc">
+                    加载失败，该节点可能需要登录才能访问哦
+                </view>
+                <view class="empty-button" @click="getAllTopics()">
+                    再试一次
                 </view>
             </view>
-            <template v-else>
-                <view class="topic-header">
-                    <view class="header-top">
-                        <text class="name">
-                            {{ title || nodeInfo.topic_title || '' }}
-                        </text>
-                        主题总数 {{ nodeInfo.topic_count || 0 }}
-                    </view>
-                    <view class="header-bottom">
-                        {{
-                            nodeInfo.topic_intro ||
-                            'World is powered by solitude'
-                        }}
-                    </view>
+        </view>
+        <view v-else>
+            <view class="topic-header">
+                <view class="header-top">
+                    <text class="name">
+                        {{ title || nodeInfo.topic_title || '' }}
+                    </text>
+                    主题总数 {{ nodeInfo.topic_count || 0 }}
                 </view>
-                <view class="list-wrap">
-                    <view
-                        v-for="(item, index) in list"
-                        :key="index"
-                        class="item"
-                    >
-                        <Topic
-                            :item="item"
-                            :visited="false"
-                            @topicClick="getTopicsDetail(item.id)"
-                        ></Topic>
-                    </view>
+                <view class="header-bottom">
+                    {{ nodeInfo.topic_intro || 'World is powered by solitude' }}
                 </view>
-                <view v-if="noMore" class="no-more">
-                    没有了，去看看别的或休息一下吧
+            </view>
+            <view class="list-wrap">
+                <view
+                    v-for="(item, index) in list"
+                    :key="index"
+                    class="item"
+                    @click="getTopicsDetail(item.id)"
+                >
+                    <Topic :item="item" :visited="false"></Topic>
                 </view>
-            </template>
-        </template>
+            </view>
+            <view v-if="noMore" class="no-more">
+                没有了，去看看别的或休息一下吧
+            </view>
+        </view>
     </view>
 </template>
 <script setup>
@@ -61,7 +51,7 @@ import Skeleton from '@/components/Skeleton';
 import { storeToRefs } from 'pinia';
 import { reactive, ref } from 'vue';
 import { $getAllTopics } from '../service';
-import { onReachBottom, onPullDownRefresh } from '@dcloudio/uni-app';
+import { onPullDownRefresh, onReachBottom } from '@dcloudio/uni-app';
 
 const store = useStore();
 let { visited } = storeToRefs(store);
@@ -163,9 +153,6 @@ onReachBottom(() => {
 });
 </script>
 <style lang="less" scoped>
-.container {
-    padding-bottom: env(safe-area-inset-bottom);
-}
 .topic-header {
     min-height: 200px;
     background: url(https://cdn.todayhub.cn/lib/image/bg-topic.jpg) 50%
@@ -198,7 +185,7 @@ onReachBottom(() => {
     flex-direction: column;
     .item {
         white-space: normal;
-        margin-top: 20px;
+        margin-bottom: 20px;
         display: inline-block;
         width: 100%;
     }

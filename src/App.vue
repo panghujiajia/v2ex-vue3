@@ -19,6 +19,9 @@ view {
     font-family: PingFangSC-Regular, PingFang SC;
     font-size: 28px;
 }
+.container {
+    padding-bottom: env(safe-area-inset-bottom);
+}
 .btn-default {
     margin: 20px auto;
     width: 240px;
@@ -56,6 +59,18 @@ view {
         .empty-button {
             .btn-default;
         }
+    }
+}
+.list-wrap {
+    height: 100%;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    .item {
+        white-space: normal;
+        border-bottom: 20px solid #f5f5f5;
+        display: inline-block;
+        width: 100%;
     }
 }
 .no-more {

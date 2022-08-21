@@ -181,19 +181,6 @@ const animationFinish = e => {
         height: 100%;
         width: 100%;
         overflow: hidden;
-        .list-wrap {
-            background: #f5f5f5;
-            height: 100%;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            .item {
-                white-space: normal;
-                margin-bottom: 20px;
-                display: inline-block;
-                width: 100%;
-            }
-        }
     }
 }
 </style>

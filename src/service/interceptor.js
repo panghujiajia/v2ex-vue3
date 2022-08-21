@@ -7,7 +7,7 @@ const createInterceptor = instance => {
     instance.interceptors.request.use(
         config => {
             // 可使用async await 做异步操作
-            // console.log(config);
+            console.log(config);
             if (config.custom.loading) {
                 uni.showLoading({
                     title: '加载中...',
@@ -17,16 +17,18 @@ const createInterceptor = instance => {
             // 判断接口是否需要token
             if (config.custom.auth) {
                 const store = useStore();
-                let { cookie } = storeToRefs(store);
+                let { cookie, userInfo } = storeToRefs(store);
                 if (!cookie.value) {
-                    uni.showToast({
-                        title: '用户登录信息失效，请重新登录',
-                        icon: 'none'
-                    });
+                    if (userInfo.value.username) {
+                        uni.showToast({
+                            title: '用户登录信息失效，请重新登录',
+                            icon: 'none'
+                        });
+                    }
                     // 如果token不存在，return Promise.reject(config) 会取消本次请求
                     return Promise.reject(config);
                 }
-                config.header.cookie = cookie.value;
+                config.header.token = cookie.value;
             }
             return config;
         },

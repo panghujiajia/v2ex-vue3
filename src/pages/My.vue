@@ -162,15 +162,18 @@ let {
     autoSign,
     autoNavigate,
     cookie,
+    currentTabBar,
     toastTitle,
     notifications,
     v2exConfig,
     userInfo
 } = storeToRefs(store);
 async function init() {
-    await store.getUserInfo();
-    await store.getUserBalance();
-    await store.getLoginRewardInfo();
+    if (cookie.value && currentTabBar.value === 2) {
+        await store.getUserInfo();
+        await store.getUserBalance();
+        await store.getLoginRewardInfo();
+    }
 }
 init();
 

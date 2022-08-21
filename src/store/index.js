@@ -24,6 +24,8 @@ export const useStore = defineStore(
 
         let v2exConfig = ref({});
 
+        let historyTopic = ref([]);
+
         let autoSign = ref(false);
         let autoNavigate = ref(true);
         let cookie = ref('');
@@ -137,6 +139,14 @@ export const useStore = defineStore(
         function saveUserInfo(data) {
             userInfo.value = { ...userInfo.value, ...data };
         }
+        function saveHistoryTopics(data) {
+            let history = historyTopic.value.reverse();
+            history = history.filter(item => {
+                return item.id !== data.id;
+            });
+            history.push(data);
+            historyTopic.value = history.slice(-30).reverse();
+        }
         return {
             allTag,
             myTag,
@@ -154,6 +164,7 @@ export const useStore = defineStore(
             storageTime,
             visited,
             v2exConfig,
+            historyTopic,
             toggleAutoSign,
             changeTabBar,
             changeTagIndex,
@@ -168,7 +179,8 @@ export const useStore = defineStore(
             getLoginReward,
             getLoginRewardInfo,
             getUserBalance,
-            toggleAutoNavigate
+            toggleAutoNavigate,
+            saveHistoryTopics
         };
     },
     {
@@ -183,7 +195,8 @@ export const useStore = defineStore(
                 'storageTime',
                 'visited',
                 'userInfo',
-                'topicData'
+                'topicData',
+                'historyTopic'
             ]
         }
     }

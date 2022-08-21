@@ -120,8 +120,9 @@ import AuthorInfo from '@/components/AuthorInfo';
 import TopicTag from '@/components/TopicTag';
 import Skeleton from '@/components/Skeleton';
 import MarkDown from '@/components/MarkDown';
-import { onReachBottom, onPullDownRefresh } from '@dcloudio/uni-app';
+import { onPullDownRefresh, onReachBottom } from '@dcloudio/uni-app';
 import { useStore } from '../store';
+
 const store = useStore();
 let loading = ref(true);
 let replyBox = ref(false);
@@ -153,6 +154,7 @@ async function loadData() {
             topicsDetail.value = res;
             uni.setNavigationBarTitle({ title: topicsDetail.value.title });
             totalPage.value = page || 1;
+            store.saveHistoryTopics(res);
         }
         topicsDetail.value.once = once;
         reply_list = reply_list.map(item => {
@@ -257,9 +259,6 @@ onReachBottom(() => {
 });
 </script>
 <style lang="less" scoped>
-.container {
-    padding-bottom: env(safe-area-inset-bottom);
-}
 text {
     user-select: text;
 }

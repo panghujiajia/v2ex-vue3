@@ -1,6 +1,6 @@
 <template>
     <view class="container">
-        <view class="load-failed" v-if="!historyTopic.length">
+        <view v-if="!historyTopic.length" class="load-failed">
             <view class="reload">
                 <image
                     class="empty-img"
@@ -10,53 +10,44 @@
                 <view class="empty-desc">暂无访问记录</view>
             </view>
         </view>
-        <view v-else>
-            <view class="list-wrap">
-                <view
-                    class="item"
-                    v-for="(item, index) in historyTopic"
-                    :key="index"
-                    @click.stop="getTopicsDetail(item.id)"
-                >
-                    <Topic :item="item"></Topic>
-                </view>
+        <scroll-view
+            v-else
+            :scroll-y="true"
+            class="list-wrap"
+            scroll-with-animation
+            @touchmove.prevent.stop="
+                () => {
+                    return false;
+                }
+            "
+        >
+            <view
+                v-for="(item, index) in historyTopic"
+                :key="index"
+                class="item"
+                @click.stop="getTopicsDetail(item.id)"
+            >
+                <Topic :item="item"></Topic>
             </view>
-            <view class="noMore">只展示最近访问的30条～</view>
-        </view>
+            <view class="no-more">只展示最近访问的30条</view>
+        </scroll-view>
     </view>
 </template>
-<script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
-import { State } from 'vuex-class';
+<script setup>
 import Topic from '@/components/Topic.vue';
-@Component({
-    name: 'History',
-    components: {
-        Topic
-    }
-})
-export default class History extends Vue {
-    @State('historyTopic')
-    private historyTopic!: any[];
-    // 跳转主题详情
-    private getTopicsDetail(id: string) {
-        uni.navigateTo({
-            url: `/pages/Detail?id=${id}`
-        });
-    }
+import { useStore } from '../store';
+import { storeToRefs } from 'pinia';
+
+const store = useStore();
+let { historyTopic } = storeToRefs(store);
+function getTopicsDetail(id) {
+    uni.navigateTo({
+        url: `/pages/Detail?id=${id}`
+    });
 }
 </script>
 <style lang="less" scoped>
-.list-wrap {
-    background: #f5f5f5;
-    border-bottom: 1rpx solid #f5f5f5;
-    margin-bottom: 20rpx;
-    .item {
-        &:last-child {
-            /deep/.topic-wrap {
-                margin-bottom: 0;
-            }
-        }
-    }
+.container {
+    height: calc(100vh - env(safe-area-inset-bottom));
 }
 </style>
