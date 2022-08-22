@@ -1,21 +1,11 @@
 <template>
     <view class="container">
         <Skeleton v-if="loading && loadType === 'refresh'"></Skeleton>
-        <view v-else-if="!list.length" class="load-failed">
-            <view class="reload">
-                <image
-                    class="empty-img"
-                    src="https://img01.yzcdn.cn/vant/empty-image-error.png"
-                >
-                </image>
-                <view class="empty-desc">
-                    加载失败，该节点可能需要登录才能访问哦
-                </view>
-                <view class="empty-button" @click="getAllTopics()">
-                    再试一次
-                </view>
-            </view>
-        </view>
+        <LoadFaild
+            v-else-if="!list.length"
+            :status="true"
+            @reload="getList()"
+        ></LoadFaild>
         <view v-else>
             <view class="topic-header">
                 <view class="header-top">
@@ -46,12 +36,13 @@
 </template>
 <script setup>
 import { useStore } from '../store';
-import Topic from '@/components/Topic.vue';
+import Topic from '@/components/Topic';
 import Skeleton from '@/components/Skeleton';
+import LoadFaild from '@/components/LoadFaild';
 import { storeToRefs } from 'pinia';
 import { reactive, ref } from 'vue';
 import { $getAllTopics } from '../service';
-import { onPullDownRefresh, onReachBottom } from '@dcloudio/uni-app';
+import { onPullDownRefresh, onReachBottom, onLoad } from '@dcloudio/uni-app';
 
 const store = useStore();
 let { visited } = storeToRefs(store);
@@ -71,15 +62,13 @@ let noMore = ref(false);
 let loadType = ref('refresh');
 
 const props = defineProps(['value', 'title']);
-function onLoad() {
+onLoad(() => {
     uni.setNavigationBarTitle({ title: props.title || '节点' });
     params.value = props.value;
     params.title = props.title;
-    params.p = 1;
-    getAllTopics();
-}
-onLoad();
-async function getAllTopics() {
+    getList();
+});
+async function getList() {
     loading.value = true;
     const res = await $getAllTopics({
         tab: params.value,
@@ -137,20 +126,22 @@ function getTopicsDetail(id) {
     });
 }
 
-onPullDownRefresh(() => {
+onPullDownRefresh(refresh);
+function refresh() {
     params.p = 1;
     loadType.value = 'refresh';
     noMore.value = false;
-    getAllTopics();
-});
-onReachBottom(() => {
+    getList();
+}
+onReachBottom(loadMore);
+function loadMore() {
     if (noMore.value) {
         return;
     }
     params.p = ++params.p;
     loadType.value = 'loadMore';
-    getAllTopics();
-});
+    getList();
+}
 </script>
 <style lang="less" scoped>
 .topic-header {

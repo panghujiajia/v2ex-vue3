@@ -10,7 +10,11 @@
 </template>
 <script setup>
 import mpHtml from 'mp-html/dist/uni-app/components/mp-html/mp-html';
+import { useStore } from '../store';
+import { storeToRefs } from 'pinia';
 const props = defineProps(['content']);
+const store = useStore();
+let { autoNavigate } = storeToRefs(store);
 function linkClick(e) {
     const { href, innerText } = e;
     const hrefArr = href.split('/');
@@ -29,7 +33,7 @@ function linkClick(e) {
         //         .exec();
         //     return;
         // }
-        if (this.autoNavigate) {
+        if (autoNavigate.value) {
             // 链接为主题详情
             if (href.indexOf('/t/') > -1) {
                 let id = href.split('/').pop();

@@ -1,115 +1,100 @@
 <template>
     <view class="container">
-        <template v-if="loading && loadType === 'refresh'">
-            <Skeleton type="detail"></Skeleton>
-        </template>
+        <Skeleton
+            v-if="loading && loadType === 'refresh'"
+            type="detail"
+        ></Skeleton>
+        <LoadFaild
+            v-else-if="!topicsDetail.title"
+            :status="true"
+            @reload="loadData()"
+        ></LoadFaild>
         <template v-else>
-            <view v-if="!topicsDetail.title" class="load-failed">
-                <view class="reload">
-                    <image
-                        class="empty-img"
-                        src="https://img01.yzcdn.cn/vant/empty-image-error.png"
-                    >
-                    </image>
-                    <view class="empty-desc">加载失败</view>
-                    <view class="empty-button" @click="loadData()">
-                        再试一次
+            <view class="topic-wrap">
+                <AuthorInfo :item="topicsDetail"></AuthorInfo>
+                <view class="title">{{ topicsDetail.title }}</view>
+                <MarkDown :content="topicsDetail.content"></MarkDown>
+            </view>
+            <view v-if="topicsDetail.subtle_list.length" class="subtle-wrap">
+                <template
+                    v-for="(item, index) in topicsDetail.subtle_list"
+                    :key="index"
+                >
+                    <view class="title">
+                        第{{ index + 1 }}条附言 {{ item.time }}
                     </view>
+                    <view class="content">
+                        <MarkDown :content="item.content"></MarkDown>
+                    </view>
+                </template>
+            </view>
+            <view class="tag-info">
+                <TopicTag :item="topicsDetail"></TopicTag>
+                <view class="floor-wrap">
+                    <image
+                        class="reply-icon"
+                        src="https://cdn.todayhub.cn/lib/image/reply_neue.png"
+                        @click="replyTopic()"
+                    ></image>
+                    <view class="floor">OP</view>
                 </view>
             </view>
-            <template v-else>
-                <view class="topic-wrap">
-                    <AuthorInfo :item="topicsDetail"></AuthorInfo>
-                    <view class="title">{{ topicsDetail.title }}</view>
-                    <MarkDown :content="topicsDetail.content"></MarkDown>
-                </view>
-                <view
-                    v-if="topicsDetail.subtle_list.length"
-                    class="subtle-wrap"
-                >
-                    <template
-                        v-for="(item, index) in topicsDetail.subtle_list"
-                        :key="index"
-                    >
-                        <view class="title">
-                            第{{ index + 1 }}条附言 {{ item.time }}
-                        </view>
-                        <view class="content">
-                            <MarkDown :content="item.content"></MarkDown>
-                        </view>
-                    </template>
-                </view>
-                <view class="tag-info">
-                    <TopicTag :item="topicsDetail"></TopicTag>
+            <view v-if="topicsDetail.reply_num" class="reply-num">
+                {{ topicsDetail.reply_num }}条回复
+            </view>
+            <view
+                v-for="(item, index) in topicsDetail.reply_list"
+                :key="index"
+                :class="item.author"
+                class="topic-wrap topic-reply"
+            >
+                <view class="user-info">
+                    <AuthorInfo :item="item"></AuthorInfo>
                     <view class="floor-wrap">
                         <image
                             class="reply-icon"
                             src="https://cdn.todayhub.cn/lib/image/reply_neue.png"
-                            @click="replyTopic()"
+                            @click="replyTopic(item)"
                         ></image>
-                        <view class="floor">OP</view>
-                    </view>
-                </view>
-                <view v-if="topicsDetail.reply_num" class="reply-num">
-                    {{ topicsDetail.reply_num }}条回复
-                </view>
-                <view
-                    v-for="(item, index) in topicsDetail.reply_list"
-                    :key="index"
-                    :class="item.author"
-                    class="topic-wrap topic-reply"
-                >
-                    <view class="user-info">
-                        <AuthorInfo :item="item"></AuthorInfo>
-                        <view class="floor-wrap">
-                            <image
-                                class="reply-icon"
-                                src="https://cdn.todayhub.cn/lib/image/reply_neue.png"
-                                @click="replyTopic(item)"
-                            ></image>
-                            <view class="floor">
-                                {{ `${index + 1}楼` }}
-                            </view>
-                        </view>
-                    </view>
-                    <MarkDown :content="item.content"></MarkDown>
-                </view>
-                <view v-if="replyBox" class="reply-wrap">
-                    <textarea
-                        :hold-keyboard="true"
-                        :maxlength="-1"
-                        :show-confirm-bar="false"
-                        :value="content"
-                        auto-focus
-                        class="textarea"
-                        fixed
-                        placeholder="请输入内容"
-                        placeholder-style="font-size: 28px;color: #999;"
-                        @input="onInputChange"
-                    />
-                    <view class="tip">
-                        <view>请尽量让自己的回复能够对别人有帮助</view>
-                        <view>若提交失败请尝试重新登录</view>
-                    </view>
-                    <view class="btn-wrap">
-                        <view
-                            class="reply-btn cancel-btn"
-                            @click="cancelReply()"
-                        >
-                            取消
-                        </view>
-                        <view class="reply-btn" @click="confirmReply()">
-                            提交
+                        <view class="floor">
+                            {{ `${index + 1}楼` }}
                         </view>
                     </view>
                 </view>
-                <!-- #ifdef MP-WEIXIN -->
-                <ad unit-id="adunit-6996f541fca34984"></ad>
-                <!-- #endif -->
-                <view v-if="noMore" class="no-more">
-                    没有了，去看看别的或休息一下吧
+                <MarkDown :content="item.content"></MarkDown>
+            </view>
+            <view v-if="replyBox" class="reply-wrap">
+                <textarea
+                    :hold-keyboard="true"
+                    :maxlength="-1"
+                    :show-confirm-bar="false"
+                    :value="content"
+                    auto-focus
+                    class="textarea"
+                    fixed
+                    placeholder="请输入内容"
+                    placeholder-style="font-size: 28px;color: #999;"
+                    @input="onInputChange"
+                />
+                <view class="tip">
+                    <view>请尽量让自己的回复能够对别人有帮助</view>
+                    <view>若提交失败请尝试重新登录</view>
                 </view>
-            </template>
+                <view class="btn-wrap">
+                    <view class="reply-btn cancel-btn" @click="cancelReply()">
+                        取消
+                    </view>
+                    <view class="reply-btn" @click="confirmReply()">
+                        提交
+                    </view>
+                </view>
+            </view>
+            <!-- #ifdef MP-WEIXIN -->
+            <ad unit-id="adunit-6996f541fca34984"></ad>
+            <!-- #endif -->
+            <view v-if="noMore" class="no-more">
+                没有了，去看看别的或休息一下吧
+            </view>
         </template>
     </view>
 </template>
@@ -120,7 +105,7 @@ import AuthorInfo from '@/components/AuthorInfo';
 import TopicTag from '@/components/TopicTag';
 import Skeleton from '@/components/Skeleton';
 import MarkDown from '@/components/MarkDown';
-import { onPullDownRefresh, onReachBottom } from '@dcloudio/uni-app';
+import { onPullDownRefresh, onReachBottom, onLoad } from '@dcloudio/uni-app';
 import { useStore } from '../store';
 
 const store = useStore();
@@ -139,12 +124,10 @@ let topicsDetail = ref({
     subtle_list: []
 });
 const props = defineProps(['id']);
-function onLoad() {
+onLoad(() => {
     params.id = props.id;
-    params.p = 1;
     loadData();
-}
-onLoad();
+});
 async function loadData() {
     const replyList = topicsDetail.value.reply_list || [];
     const res = await $getTopicDetail(params);
@@ -245,18 +228,22 @@ function replyTopic(item) {
     }
     replyBox.value = true;
 }
-onPullDownRefresh(() => {
+onPullDownRefresh(refresh);
+function refresh() {
+    params.p = 1;
     loadType.value = 'refresh';
-    onLoad();
-});
-onReachBottom(() => {
+    noMore.value = false;
+    loadData();
+}
+onReachBottom(loadMore);
+function loadMore() {
     if (noMore.value) {
         return;
     }
     params.p = ++params.p;
     loadType.value = 'loadMore';
     loadData();
-});
+}
 </script>
 <style lang="less" scoped>
 text {

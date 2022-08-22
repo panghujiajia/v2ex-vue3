@@ -63,6 +63,7 @@
 import { useStore } from '../store';
 import { ref } from 'vue';
 import { storeToRefs } from 'pinia/dist/pinia';
+import { onHide } from '@dcloudio/uni-app';
 const store = useStore();
 let { allTag, myTag } = storeToRefs(store);
 
@@ -99,9 +100,9 @@ function setMyTag(tag) {
     }
     store.updateMyTag(myTag.value);
 }
-function onHide() {
-    this.isEdit = false;
-}
+onHide(() => {
+    isEdit.value = false;
+});
 // #ifdef MP-WEIXIN
 function onShareAppMessage(e) {
     return {

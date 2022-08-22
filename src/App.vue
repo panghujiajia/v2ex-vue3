@@ -33,34 +33,6 @@ view {
     background: #4474ff;
     font-size: 24px;
 }
-.load-failed {
-    position: fixed;
-    height: 100vh;
-    width: 100%;
-    top: 0;
-    left: 0;
-    background: #fff;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    .reload {
-        text-align: center;
-        margin-top: -300px;
-        .empty-img {
-            width: 300px;
-            height: 300px;
-        }
-        .empty-desc {
-            margin: 20px 0;
-            color: #969799;
-            font-size: 24px;
-            line-height: 20px;
-        }
-        .empty-button {
-            .btn-default;
-        }
-    }
-}
 .list-wrap {
     height: 100%;
     overflow: hidden;
@@ -71,6 +43,7 @@ view {
         border-bottom: 20px solid #f5f5f5;
         display: inline-block;
         width: 100%;
+        box-sizing: border-box;
     }
 }
 .no-more {

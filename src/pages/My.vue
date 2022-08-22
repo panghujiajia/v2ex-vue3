@@ -91,19 +91,20 @@
                     <view class="icon-arrow"></view>
                 </view>
             </view>
-            <view
-                class="cell van-hairline--bottom"
-                @click="navigateTo('collect', true)"
-            >
-                <view>我的收藏</view>
-                <view class="icon-arrow"></view>
-            </view>
+            <!--            <view-->
+            <!--                class="cell van-hairline&#45;&#45;bottom"-->
+            <!--                @click="navigateTo('collect', true)"-->
+            <!--            >-->
+            <!--                <view>我的收藏</view>-->
+            <!--                <view class="icon-arrow"></view>-->
+            <!--            </view>-->
             <view class="cell van-hairline--bottom">
                 <view>自动签到</view>
                 <switch
                     :checked="autoSign"
                     color="#ffc413"
-                    @change="onAutoSignChange"
+                    disabled
+                    @click="onAutoSignChange"
                 />
             </view>
             <view class="cell van-hairline--bottom">
@@ -116,20 +117,21 @@
                 <switch
                     :checked="autoNavigate"
                     color="#ffc413"
-                    @change="onAutoNavigateChange"
+                    disabled
+                    @click="onAutoNavigateChange"
                 />
             </view>
-            <view class="cell van-hairline--bottom">
-                <view>
-                    <view>使用我的代理</view>
-                    <view class="tip"> 直接请求v2ex官网，速度更快 </view>
-                </view>
-                <switch
-                    :checked="autoNavigate"
-                    color="#ffc413"
-                    @change="onAutoNavigateChange"
-                />
-            </view>
+            <!--            <view class="cell van-hairline&#45;&#45;bottom">-->
+            <!--                <view>-->
+            <!--                    <view>使用我的代理</view>-->
+            <!--                    <view class="tip">直接请求v2ex官网，速度更快</view>-->
+            <!--                </view>-->
+            <!--                <switch-->
+            <!--                    :checked="autoNavigate"-->
+            <!--                    color="#ffc413"-->
+            <!--                    @change="onAutoNavigateChange"-->
+            <!--                />-->
+            <!--            </view>-->
             <view
                 v-if="cookie"
                 class="cell van-hairline--bottom"
@@ -168,19 +170,10 @@ let {
     v2exConfig,
     userInfo
 } = storeToRefs(store);
-async function init() {
-    if (cookie.value && currentTabBar.value === 2) {
-        await store.getUserInfo();
-        await store.getUserBalance();
-        await store.getLoginRewardInfo();
-    }
-}
-init();
 
-function onAutoNavigateChange({ detail }) {
-    const { value } = detail;
+function onAutoNavigateChange() {
     uni.vibrateShort({});
-    store.toggleAutoNavigate(value);
+    store.toggleAutoNavigate(!autoNavigate.value);
 }
 
 function getSignIn() {
@@ -196,17 +189,16 @@ function getSignIn() {
 function login() {
     uni.navigateTo({ url: '/pages/Login' });
 }
-function onAutoSignChange({ detail }) {
-    const { value } = detail;
+function onAutoSignChange() {
     uni.vibrateShort({});
-    if (!cookie.value && value) {
+    if (!cookie.value) {
         uni.showToast({
             title: '登录后才能为您自动签到哦！',
             icon: 'none'
         });
         return;
     }
-    store.toggleAutoSign(value);
+    store.toggleAutoSign(!autoSign.value);
 }
 function showTip() {
     if (!cookie.value) {
@@ -433,6 +425,7 @@ function navigateTo(key, auth = false) {
                 width: 100%;
                 background: #fff;
             }
+            opacity: 1;
         }
         text {
             font-size: 24px;

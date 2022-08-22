@@ -1,272 +1,191 @@
 <template>
     <view class="container">
-        <template v-if="loading && loadType === 'refresh'">
-            <Skeleton type="list"></Skeleton>
-        </template>
-        <template v-else>
-            <view v-if="!list.length" class="load-failed">
-                <view v-if="loadFaild" class="reload">
-                    <image
-                        class="empty-img"
-                        src="https://img01.yzcdn.cn/vant/empty-image-error.png"
-                    >
-                    </image>
-                    <view class="empty-desc">加载失败</view>
-                    <view class="empty-button" @click="getUserMessage()">
-                        再试一次
-                    </view>
-                </view>
-                <view v-else class="reload">
-                    <image
-                        class="empty-img"
-                        src="https://img01.yzcdn.cn/vant/empty-image-default.png"
-                    >
-                    </image>
-                    <view class="empty-desc">暂无消息记录</view>
-                </view>
-            </view>
-            <view v-else>
-                <view class="list-wrap">
-                    <view
-                        v-for="(item, index) in list"
-                        :key="index"
-                        class="item"
-                    >
-                        <view class="message-info">
-                            <text class="message-time">
-                                {{ item.last_reply_time }}
+        <Skeleton v-if="loading && loadType === 'refresh'"></Skeleton>
+        <LoadFaild
+            v-else-if="!list.length"
+            :status="loadFaild"
+            @reload="getList()"
+        ></LoadFaild>
+        <view v-else>
+            <view class="list-wrap">
+                <view v-for="(item, index) in list" :key="index" class="item">
+                    <view class="message-info">
+                        <text class="message-time">
+                            {{ item.last_reply_time }}
+                        </text>
+                        <view
+                            v-if="item.messageType === 'reply'"
+                            class="message-title"
+                        >
+                            <image :src="item.avatar"></image>
+                            <text
+                                class="light"
+                                @click="getUserTopic(item.author)"
+                            >
+                                {{ item.author }}
                             </text>
-                            <view
-                                class="message-title"
-                                v-if="item.messageType === 'reply'"
+                            <text class="gray">在</text>
+                            <text
+                                class="light"
+                                @click="getTopicsDetail(item.id)"
                             >
-                                <image :src="item.avatar"></image>
-                                <text
-                                    class="light"
-                                    @click="getUserTopic(item.author)"
-                                >
-                                    {{ item.author }}
-                                </text>
-                                <text class="gray">在</text>
-                                <text
-                                    class="light"
-                                    @click="getTopicsDetail(item.id)"
-                                >
-                                    {{ item.title }}
-                                </text>
-                                <text class="gray">里回复了你</text>
-                            </view>
-                            <view
-                                class="message-title"
-                                v-if="item.messageType === 'thanks'"
-                            >
-                                <image :src="item.avatar"></image>
-                                <text
-                                    class="light"
-                                    @click="getUserTopic(item.author)"
-                                >
-                                    {{ item.author }}
-                                </text>
-                                <text class="gray">感谢了你在主题</text>
-                                <text class="gray"> › </text>
-                                <text
-                                    class="light"
-                                    @click="getTopicsDetail(item.id)"
-                                >
-                                    {{ item.title }}
-                                </text>
-                                <text class="gray">里的回复</text>
-                            </view>
-                            <view
-                                class="message-title"
-                                v-if="item.messageType === 'collection'"
-                            >
-                                <image :src="item.avatar"></image>
-                                <text
-                                    class="light"
-                                    @click="getUserTopic(item.author)"
-                                >
-                                    {{ item.author }}
-                                </text>
-                                <text class="gray"> 收藏了你发布的主题 </text>
-                                <text class="gray"> › </text>
-                                <text
-                                    class="light"
-                                    @click="getTopicsDetail(item.id)"
-                                >
-                                    {{ item.title }}
-                                </text>
-                            </view>
+                                {{ item.title }}
+                            </text>
+                            <text class="gray">里回复了你</text>
                         </view>
-                        <view class="message-content" v-if="item.content">
-                            <mp-html
-                                :content="item.content"
-                                markdown
-                                :copyLink="false"
-                                selectable
-                                @linktap="linktap"
-                            />
+                        <view
+                            v-if="item.messageType === 'thanks'"
+                            class="message-title"
+                        >
+                            <image :src="item.avatar"></image>
+                            <text
+                                class="light"
+                                @click="getUserTopic(item.author)"
+                            >
+                                {{ item.author }}
+                            </text>
+                            <text class="gray">感谢了你在主题</text>
+                            <text class="gray"> › </text>
+                            <text
+                                class="light"
+                                @click="getTopicsDetail(item.id)"
+                            >
+                                {{ item.title }}
+                            </text>
+                            <text class="gray">里的回复</text>
+                        </view>
+                        <view
+                            v-if="item.messageType === 'collection'"
+                            class="message-title"
+                        >
+                            <image :src="item.avatar"></image>
+                            <text
+                                class="light"
+                                @click="getUserTopic(item.author)"
+                            >
+                                {{ item.author }}
+                            </text>
+                            <text class="gray"> 收藏了你发布的主题 </text>
+                            <text class="gray"> › </text>
+                            <text
+                                class="light"
+                                @click="getTopicsDetail(item.id)"
+                            >
+                                {{ item.title }}
+                            </text>
                         </view>
                     </view>
+                    <view class="message-content">
+                        <MarkDown :content="item.content"></MarkDown>
+                    </view>
                 </view>
-                <view v-if="noMore" class="noMore"> 没有啦～ </view>
             </view>
-        </template>
+            <view v-if="noMore" class="no-more"> 没有啦～ </view>
+        </view>
     </view>
 </template>
-<script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
-import Topic from '@/components/Topic.vue';
-import { $getUserMessage } from '@/services/Common.http';
-import Skeleton from '@/components/Skeleton.vue';
-import { Mutation, State } from 'vuex-class';
+<script setup>
+import { $getUserMessage } from '../service';
+import MarkDown from '@/components/MarkDown.vue';
+import LoadFaild from '@/components/LoadFaild.vue';
+import { reactive, ref } from 'vue';
+import { onPullDownRefresh, onReachBottom, onLoad } from '@dcloudio/uni-app';
 
-@Component({
-    name: 'UserTopic',
-    components: {
-        Topic,
-        Skeleton
-    }
-})
-export default class UserTopic extends Vue {
-    @State('autoNavigate')
-    private autoNavigate!: boolean;
-    @Mutation('saveNotifications')
-    private saveNotifications!: (data: any) => void;
-    private loading = true;
-    private noMore = false; // 没有更多了
-    private loadFaild = false;
-    private loadType = 'refresh'; // 加载类型
-    private list: any = [];
-    private pageNum = 1; // 页码
-    private messageInfo: any = {
-        message_count: 0
-    };
-    private onLoad(option: any) {
-        this.saveNotifications(0);
-        this.getUserMessage();
-    }
-    // 点击链接
-    private linktap(e: any) {
-        const { href, innerText } = e;
-        const hrefArr = href.split('/');
-        if (hrefArr.length >= 3) {
-            if (href.indexOf('/member/') > -1) {
-                uni.navigateTo({
-                    url: `/pages/UserTopic?username=${innerText}`
-                });
-                return;
-            }
-            if (this.autoNavigate) {
-                // 链接为主题详情
-                if (href.indexOf('/t/') > -1) {
-                    const id = href.split('/').pop();
-                    uni.navigateTo({
-                        url: `/pages/Detail?id=${id}`
-                    });
-                    return;
-                }
-            }
-        }
-        // #ifdef MP-WEIXIN
-        uni.setClipboardData({
-            data: href,
-            success: () => {
-                uni.showToast({
-                    title: '链接复制成功',
-                    icon: 'none'
-                });
-            }
-        });
-        // #endif
-        // #ifdef APP-PLUS
-        plus.runtime.openURL(href);
-        // #endif
-    }
-    private async getUserMessage() {
-        this.loading = true;
-        const list = this.list;
-        const res = await $getUserMessage(this.pageNum);
-        if (res) {
-            const { messageInfo, data } = res;
-            this.messageInfo = messageInfo;
-            if (this.loadType === 'refresh') {
-                this.list = data.map((item: any) => {
-                    return {
-                        ...item,
-                        content:
-                            item.content &&
-                            item.content.replace(
-                                /(@.*?>)(.*?)(<\/a>)/g,
-                                '<text class="user-name">$1$2$3</text>'
-                            )
-                    };
-                });
-                this.loadFaild = false;
-                uni.stopPullDownRefresh();
-            } else {
-                if (!this.noMore) {
-                    this.list = [...list, ...data];
-                }
-            }
-            this.isLastPage();
+let loading = ref(true);
+let noMore = ref(false);
+let loadFaild = ref(false);
+let loadType = ref('refresh');
+let list = ref([]);
+let params = reactive({
+    username: '',
+    p: 1
+});
+let nodeInfo = ref({
+    message_count: 0
+});
+onLoad(() => {
+    store.saveNotifications(0);
+    getList();
+});
+async function getList() {
+    loading.value = true;
+    const topicList = list.value || [];
+    const res = await $getUserMessage(params.p);
+    if (res) {
+        const { messageInfo, data } = res;
+        nodeInfo.value = messageInfo;
+        if (loadType.value === 'refresh') {
+            list.value = data.map(item => {
+                return {
+                    ...item,
+                    content:
+                        item.content &&
+                        item.content.replace(
+                            /(@.*?>)(.*?)(<\/a>)/g,
+                            '<text class="user-name">$1$2$3</text>'
+                        )
+                };
+            });
+            loadFaild.value = false;
+            uni.stopPullDownRefresh();
         } else {
-            this.loadFaild = true;
-        }
-        this.loading = false;
-    }
-    // 判断是否最后一页
-    private isLastPage() {
-        const { message_count } = this.messageInfo;
-        const list = this.list;
-        const len = list.length;
-        if (len >= message_count) {
-            this.noMore = true;
-        } else {
-            if (len && len < 10) {
-                this.pageNum = ++this.pageNum;
-                this.loadType = 'loadMore';
-                this.getUserMessage();
+            if (!noMore.value) {
+                list.value = [...topicList, ...data];
             }
         }
-    }
-    // 跳转主题详情
-    private getTopicsDetail(id: string) {
-        uni.navigateTo({
-            url: `/pages/Detail?id=${id}`
-        });
-    }
-    private getUserTopic(username: string) {
-        uni.navigateTo({
-            url: `/pages/UserTopic?username=${username}`
-        });
-    }
-    private onPullDownRefresh() {
-        this.pageNum = 1;
-        this.loadType = 'refresh';
-        this.noMore = false;
-        this.getUserMessage();
-    }
-    private onReachBottom() {
-        if (this.noMore) {
-            return;
+        isLastPage();
+    } else {
+        if (loadType.value === 'loadMore') {
+            params.p = --params.p;
         }
-        this.pageNum = ++this.pageNum;
-        this.loadType = 'loadMore';
-        this.getUserMessage();
+        loadFaild.value = true;
     }
+    loading.value = false;
+}
+function isLastPage() {
+    const { message_count } = nodeInfo.value;
+    const len = list.value.length;
+    if (len >= message_count) {
+        noMore.value = true;
+    } else {
+        if (len && len < 10) {
+            loadMore();
+        }
+    }
+}
+function getTopicsDetail(id) {
+    uni.navigateTo({
+        url: `/pages/Detail?id=${id}`
+    });
+}
+function getUserTopic(username) {
+    uni.navigateTo({
+        url: `/pages/UserTopic?username=${username}`
+    });
+}
+onPullDownRefresh(refresh);
+function refresh() {
+    params.p = 1;
+    loadType.value = 'refresh';
+    noMore.value = false;
+    getList();
+}
+onReachBottom(loadMore);
+function loadMore() {
+    if (noMore.value) {
+        return;
+    }
+    params.p = ++params.p;
+    loadType.value = 'loadMore';
+    getList();
 }
 </script>
 <style lang="less" scoped>
 .list-wrap {
-    background: #f5f5f5;
-    border-bottom: 1rpx solid #f5f5f5;
-    margin-bottom: 20rpx;
     .item {
-        padding: 20rpx;
-        font-size: 30rpx;
+        font-size: 28px;
+        padding: 25px 30px;
         background: #fff;
-        margin-top: 20rpx;
         /deep/.user-name {
             color: #4474ff;
             view {
@@ -288,22 +207,22 @@ export default class UserTopic extends Vue {
                 color: #999;
             }
             .message-title {
-                margin: 10rpx 0 15rpx;
-                line-height: 40rpx;
+                padding: 10px 0;
+                line-height: 50px;
                 image {
-                    width: 40rpx;
-                    height: 40rpx;
-                    border-radius: 8rpx;
-                    vertical-align: -11rpx;
+                    width: 30px;
+                    height: 30px;
+                    border-radius: 5px;
+                    vertical-align: middle;
                 }
                 text {
-                    margin: 0 10rpx;
+                    margin: 0 10px;
                 }
             }
         }
         .message-content {
             background: #f9f9f9;
-            padding: 0 20rpx;
+            padding: 10px 20px;
         }
     }
 }

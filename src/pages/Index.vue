@@ -28,19 +28,11 @@
                 <Skeleton
                     v-if="loading || currentTagIndex !== tagIndex"
                 ></Skeleton>
-                <view v-else-if="!list.length" class="load-failed">
-                    <view class="reload">
-                        <image
-                            class="empty-img"
-                            src="https://img01.yzcdn.cn/vant/empty-image-error.png"
-                        >
-                        </image>
-                        <view class="empty-desc">加载失败</view>
-                        <view class="empty-button" @click="getData()">
-                            再试一次
-                        </view>
-                    </view>
-                </view>
+                <LoadFaild
+                    v-else-if="!list.length"
+                    :status="true"
+                    @reload="getData()"
+                ></LoadFaild>
                 <scroll-view
                     v-else
                     :scroll-y="scrollY"
@@ -66,6 +58,7 @@
 import Topic from '@/components/Topic';
 import Skeleton from '@/components/Skeleton';
 import NavBar from '@/components/NavBar';
+import LoadFaild from '@/components/LoadFaild';
 import { ref } from 'vue';
 import { useStore } from '../store';
 import { $getTabTopics } from '../service';
@@ -73,7 +66,7 @@ import dayjs from 'dayjs';
 import { storeToRefs } from 'pinia';
 
 const store = useStore();
-let { tabs, currentTagIndex, currentTagName, visited, storageTime } =
+let { cookie, tabs, currentTagIndex, currentTagName, visited, storageTime } =
     storeToRefs(store);
 
 let scrollY = ref(true);
@@ -81,6 +74,8 @@ let scrollY = ref(true);
 let loading = ref(true);
 
 let list = ref([]);
+
+getData();
 
 function getTopicsDetail(id) {
     if (!visited.value.includes(id)) {
@@ -114,9 +109,6 @@ async function getList(title) {
     }
     loading.value = false;
 }
-
-store.getV2exConfig();
-getData();
 
 function getData() {
     loading.value = true;

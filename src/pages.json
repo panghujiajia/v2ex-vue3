@@ -36,6 +36,24 @@
             }
         },
         {
+            "path": "pages/UserMessage",
+            "style": {
+                "enablePullDownRefresh": true,
+                // #ifdef H5
+                "navigationStyle": "custom"
+                // #endif H5
+            }
+        },
+        {
+            "path": "pages/UserReply",
+            "style": {
+                "enablePullDownRefresh": true,
+                // #ifdef H5
+                "navigationStyle": "custom"
+                // #endif H5
+            }
+        },
+        {
             "path": "pages/History",
             "style": {
                 // #ifdef H5

@@ -1,38 +1,12 @@
 <template>
     <view class="container">
         <Skeleton v-if="loading && loadType === 'refresh'"></Skeleton>
-        <view v-else-if="!list.length" class="load-failed">
-            <view v-if="loadFaild" class="reload">
-                <image
-                    class="empty-img"
-                    src="https://img01.yzcdn.cn/vant/empty-image-error.png"
-                >
-                </image>
-                <view class="empty-desc">加载失败</view>
-                <view class="empty-button" @click="getUserTopics()">
-                    再试一次
-                </view>
-            </view>
-            <view v-else class="reload">
-                <image
-                    class="empty-img"
-                    src="https://img01.yzcdn.cn/vant/empty-image-default.png"
-                >
-                </image>
-                <view class="empty-desc">暂无主题记录</view>
-            </view>
-        </view>
-        <scroll-view
-            v-else
-            :scroll-y="true"
-            class="list-wrap"
-            scroll-with-animation
-            @touchmove.prevent.stop="
-                () => {
-                    return false;
-                }
-            "
-        >
+        <LoadFaild
+            v-else-if="!list.length"
+            :status="loadFaild"
+            @reload="getList()"
+        ></LoadFaild>
+        <view v-else class="list-wrap">
             <view
                 v-for="(item, index) in list"
                 :key="index"
@@ -41,16 +15,17 @@
             >
                 <Topic :item="item"></Topic>
             </view>
-            <view v-if="noMore" class="noMore"> 没有啦～ </view>
-        </scroll-view>
+            <view v-if="noMore" class="no-more"> 没有啦～ </view>
+        </view>
     </view>
 </template>
 <script setup>
 import Topic from '@/components/Topic.vue';
 import { $getUserTopics } from '../service';
 import Skeleton from '@/components/Skeleton.vue';
+import LoadFaild from '@/components/LoadFaild.vue';
 import { reactive, ref } from 'vue';
-import { onPullDownRefresh, onReachBottom } from '@dcloudio/uni-app';
+import { onPullDownRefresh, onReachBottom, onLoad } from '@dcloudio/uni-app';
 
 let loading = ref(true);
 let noMore = ref(false);
@@ -65,13 +40,12 @@ let nodeInfo = ref({
     topic_count: 0
 });
 const props = defineProps(['username']);
-function onLoad() {
+onLoad(() => {
     params.username = props.username;
     uni.setNavigationBarTitle({ title: `${props.username}的主题` });
-    getUserTopics();
-}
-onLoad();
-async function getUserTopics() {
+    getList();
+});
+async function getList() {
     loading.value = true;
     const topicList = list.value || [];
     const res = await $getUserTopics(params);
@@ -84,18 +58,20 @@ async function getUserTopics() {
             uni.stopPullDownRefresh();
         } else {
             if (!noMore.value) {
-                list = [...topicList, ...data];
+                list.value = [...topicList, ...data];
             }
         }
         isLastPage();
     } else {
+        if (loadType.value === 'loadMore') {
+            params.p = --params.p;
+        }
         loadFaild.value = true;
     }
     loading.value = false;
 }
 function isLastPage() {
     const { topic_count } = nodeInfo.value;
-    console.log(list.value.length);
     const len = list.value.length;
     if (len >= topic_count) {
         noMore.value = true;
@@ -107,23 +83,29 @@ function getTopicsDetail(id) {
         url: `/pages/Detail?id=${id}`
     });
 }
-onPullDownRefresh(() => {
+onPullDownRefresh(refresh);
+function refresh() {
     params.p = 1;
     loadType.value = 'refresh';
     noMore.value = false;
-    getUserTopics();
-});
-onReachBottom(() => {
+    getList();
+}
+onReachBottom(loadMore);
+function loadMore() {
     if (noMore.value) {
         return;
     }
     params.p = ++params.p;
     loadType.value = 'loadMore';
-    getUserTopics();
-});
+    getList();
+}
 </script>
 <style lang="less" scoped>
 .container {
     height: calc(100vh - env(safe-area-inset-bottom));
+    .list-wrap {
+        height: auto;
+        overflow: auto;
+    }
 }
 </style>

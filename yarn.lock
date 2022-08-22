@@ -636,9 +636,9 @@
     "execa" "^5.1.1"
     "fs-extra" "^10.0.0"
 
-"@dcloudio/uts-darwin-x64@3.0.0-alpha-3050420220804003":
-  "integrity" "sha512-9UeSUsp1OeNtala4b8I6noCNBko990AinfonqVPXbsQ9NZ9wwqJrcBpBRx5W1R7qhNYxuQ708iH9RrUQGSx5eg=="
-  "resolved" "https://registry.npmjs.org/@dcloudio/uts-darwin-x64/-/uts-darwin-x64-3.0.0-alpha-3050420220804003.tgz"
+"@dcloudio/uts-darwin-arm64@3.0.0-alpha-3050420220804003":
+  "integrity" "sha512-Fhct8oxwC/uiBwnPt7Uxd/G9rdDsVBKTBQqx7vmaVvXqgbVGnECybM14hC3K9biaegA6n7ssBWTEAxeN8jG4mA=="
+  "resolved" "https://registry.npmjs.org/@dcloudio/uts-darwin-arm64/-/uts-darwin-arm64-3.0.0-alpha-3050420220804003.tgz"
   "version" "3.0.0-alpha-3050420220804003"
 
 "@dcloudio/uts@3.0.0-alpha-3050420220804003":
@@ -1544,9 +1544,9 @@
   "resolved" "https://registry.npmjs.org/es-module-lexer/-/es-module-lexer-0.9.3.tgz"
   "version" "0.9.3"
 
-"esbuild-darwin-64@0.14.54":
-  "integrity" "sha512-jtdKWV3nBviOd5v4hOpkVmpxsBy90CGzebpbO9beiqUYVMBtSc0AL9zGftFuBon7PNDcdvNCEuQqw2x0wP9yug=="
-  "resolved" "https://registry.npmjs.org/esbuild-darwin-64/-/esbuild-darwin-64-0.14.54.tgz"
+"esbuild-darwin-arm64@0.14.54":
+  "integrity" "sha512-OPafJHD2oUPyvJMrsCvDGkRrVCar5aVyHfWGQzY1dWnzErjrDuSETxwA2HSsyg2jORLY8yBfzc1MIpUkXlctmw=="
+  "resolved" "https://registry.npmjs.org/esbuild-darwin-arm64/-/esbuild-darwin-arm64-0.14.54.tgz"
   "version" "0.14.54"
 
 "esbuild@^0.14.27":

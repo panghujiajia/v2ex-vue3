@@ -7,6 +7,7 @@ import {
     $getLoginRewardInfo,
     $getUserBalance,
     $getUserInfo,
+    $getUserNotifications,
     $getV2exConfig
 } from '../service';
 
@@ -70,6 +71,23 @@ export const useStore = defineStore(
             currentTagName.value = tabs[currentTagIndex.value].value;
         }
         function changeTabBar(index) {
+            if (cookie.value) {
+                switch (index) {
+                    case 0:
+                        getUserNotifications();
+                        getV2exConfig();
+                        getLoginRewardInfo();
+                        break;
+                    case 1:
+                        break;
+                    case 2:
+                        if (!userInfo.value.info) {
+                            getUserInfo();
+                        }
+                        getUserBalance();
+                        break;
+                }
+            }
             currentTabBar.value = index;
         }
         function updateMyTag(tag) {
@@ -78,6 +96,10 @@ export const useStore = defineStore(
 
         function updateV2exConfig(data) {
             v2exConfig.value = data;
+        }
+
+        function saveNotifications(num) {
+            notifications.value = num;
         }
 
         async function getV2exConfig() {
@@ -147,6 +169,14 @@ export const useStore = defineStore(
             history.push(data);
             historyTopic.value = history.slice(-30).reverse();
         }
+        async function getUserNotifications() {
+            const data = await $getUserNotifications();
+            if (data) {
+                saveNotifications(data);
+            } else {
+                saveNotifications(0);
+            }
+        }
         return {
             allTag,
             myTag,
@@ -180,7 +210,9 @@ export const useStore = defineStore(
             getLoginRewardInfo,
             getUserBalance,
             toggleAutoNavigate,
-            saveHistoryTopics
+            saveHistoryTopics,
+            saveNotifications,
+            getUserNotifications
         };
     },
     {
