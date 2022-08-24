@@ -27,7 +27,7 @@ const props = defineProps(['status']);
 <style lang="less" scoped>
 .load-failed {
     position: fixed;
-    height: 100vh;
+    height: 100%;
     width: 100%;
     top: 0;
     left: 0;

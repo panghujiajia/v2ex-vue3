@@ -33,10 +33,10 @@ let { currentTabBar } = toRefs(store);
     display: none;
 }
 .tabbar-page-wrap {
-    height: 100vh;
+    height: 100%;
     overflow: hidden;
     .content-wrap {
-        height: calc(100vh - 90px - env(safe-area-inset-bottom));
+        height: calc(100% - 90px - env(safe-area-inset-bottom));
         & > view {
             height: 100%;
         }

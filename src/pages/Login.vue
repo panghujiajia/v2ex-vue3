@@ -174,7 +174,7 @@ async function login() {
 </script>
 <style lang="less" scoped>
 .container {
-    min-height: 100vh;
+    height: 100%;
     background: #efefef;
     box-sizing: border-box;
     .top {
@@ -200,14 +200,13 @@ async function login() {
     }
 }
 .cell-group {
-    width: 690px;
-    margin: 0 auto;
+    margin: 0 30px;
     margin-top: -250px;
     border-radius: 16px 16px 0 0;
     position: relative;
     box-sizing: border-box;
     z-index: 2;
-    min-height: calc(100vh - 350px);
+    height: calc(100% - 350px);
     background: #fff;
     .cell {
         display: flex;
@@ -252,7 +251,7 @@ async function login() {
     color: #999;
     font-size: 22px;
     line-height: 40px;
-    padding: 15px 20px 0;
+    padding:10px 20px;
     margin-top: 15px;
 }
 .btn-default {

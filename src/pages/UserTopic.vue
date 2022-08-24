@@ -102,7 +102,7 @@ function loadMore() {
 </script>
 <style lang="less" scoped>
 .container {
-    height: calc(100vh - env(safe-area-inset-bottom));
+    height: calc(100% - env(safe-area-inset-bottom));
     .list-wrap {
         height: auto;
         overflow: auto;

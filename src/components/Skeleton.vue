@@ -47,7 +47,7 @@ const props = defineProps({
 <style lang="less" scoped>
 .sleletion-wrap {
     overflow: hidden;
-    height: 100vh;
+    height: 100%;
 }
 .author-info {
     display: flex;

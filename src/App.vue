@@ -13,6 +13,9 @@ export default {
 </script>
 
 <style lang="less">
+html,body,uni-page-body{
+    height: 100%;
+}
 view {
     margin: 0;
     padding: 0;
@@ -25,13 +28,13 @@ view {
 .btn-default {
     margin: 20px auto;
     width: 240px;
-    height: 60px;
-    line-height: 60px;
+    height: 80px;
+    line-height: 80px;
     border-radius: 60px;
     color: #fff;
     text-align: center;
     background: #4474ff;
-    font-size: 24px;
+    font-size: 28px;
 }
 .list-wrap {
     height: 100%;
