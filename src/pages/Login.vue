@@ -37,8 +37,11 @@
                     />
                     <image
                         :src="
-                            captchaBase64 ||
-                            'https://cdn.todayhub.cn/lib/image/code-loading.gif'
+                            captchaBase64
+                                ? captchaBase64
+                                : captchaBase64 === ''
+                                ? 'https://cdn.todayhub.cn/lib/image/code-loading.gif'
+                                : 'https://cdn.todayhub.cn/lib/image/icon-img-fail.png'
                         "
                         class="code"
                         @click="getLoginParams()"
@@ -87,11 +90,10 @@ async function getLoginParams() {
     if (data) {
         const { codeUrl } = data;
         signinData.value = data;
-        captchaBase64.value =
-            'data:image/png;base64,' +
-            uni.arrayBufferToBase64(new Uint8Array(codeUrl.data));
-    } else {
-        getLoginParams();
+        captchaBase64.value = codeUrl.data
+            ? 'data:image/png;base64,' +
+              uni.arrayBufferToBase64(new Uint8Array(codeUrl.data))
+            : false;
     }
 }
 // 获取输入的验证码
