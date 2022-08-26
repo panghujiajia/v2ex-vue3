@@ -27,20 +27,20 @@ function getTags(tag) {
 </script>
 <style lang="less" scoped>
 .tag-wrap {
-    padding: 0 20px;
-    height: 50px;
+    padding: 0 20rpx;
+    height: 50rpx;
     background: #f6f6f6;
-    border-radius: 25px;
+    border-radius: 25rpx;
     display: flex;
     align-items: center;
     text {
-        font-size: 24px;
+        font-size: 24rpx;
         font-family: PingFangSC-Regular, PingFang SC;
         font-weight: 400;
         color: #333333;
         &.symbol {
             color: #4474ff;
-            margin-right: 5px;
+            margin-right: 5rpx;
         }
     }
 }

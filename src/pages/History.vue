@@ -1,9 +1,6 @@
 <template>
     <view class="container">
-        <LoadFaild
-            v-if="!historyTopic.length"
-            :status="false"
-        ></LoadFaild>
+        <LoadFaild v-if="!historyTopic.length" :status="false"></LoadFaild>
         <scroll-view
             v-else
             :scroll-y="true"
@@ -23,13 +20,14 @@
             >
                 <Topic :item="item"></Topic>
             </view>
-            <view class="no-more">只展示最近访问的30条</view>
+            <NoMore>只展示最近访问的30条</NoMore>
         </scroll-view>
     </view>
 </template>
 <script setup>
 import Topic from '@/components/Topic.vue';
 import LoadFaild from '@/components/LoadFaild';
+import NoMore from '@/components/NoMore';
 import { useStore } from '../store';
 import { storeToRefs } from 'pinia';
 

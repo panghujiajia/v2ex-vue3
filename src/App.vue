@@ -13,28 +13,43 @@ export default {
 </script>
 
 <style lang="less">
-html,body,uni-page-body{
+html,
+body,
+uni-page-body,
+page {
+    /* #ifndef APP-PLUS */
     height: 100%;
+    /* #endif */
+
+    /* #ifdef APP-PLUS */
+    height: 100vh;
+    /* #endif */
+}
+/deep/.uni-scroll-view::-webkit-scrollbar {
+    height: 0;
+    width: 0;
+    background: transparent;
+    display: none;
 }
 view {
     margin: 0;
     padding: 0;
     font-family: PingFangSC-Regular, PingFang SC;
-    font-size: 28px;
+    font-size: 28rpx;
 }
 .container {
     padding-bottom: env(safe-area-inset-bottom);
 }
 .btn-default {
-    margin: 20px auto;
-    width: 240px;
-    height: 80px;
-    line-height: 80px;
-    border-radius: 60px;
+    margin: 20rpx auto;
+    width: 240rpx;
+    height: 80rpx;
+    line-height: 80rpx;
+    border-radius: 60rpx;
     color: #fff;
     text-align: center;
     background: #4474ff;
-    font-size: 28px;
+    font-size: 28rpx;
 }
 .list-wrap {
     height: 100%;
@@ -43,18 +58,10 @@ view {
     flex-direction: column;
     .item {
         white-space: normal;
-        border-bottom: 20px solid #f5f5f5;
+        border-bottom: 20rpx solid #f5f5f5;
         display: inline-block;
         width: 100%;
         box-sizing: border-box;
     }
-}
-.no-more {
-    text-align: center;
-    padding: 20px 0;
-    font-family: PingFangSC-Regular, PingFang SC;
-    font-weight: 400;
-    color: #999999;
-    font-size: 22px;
 }
 </style>

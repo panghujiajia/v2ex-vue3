@@ -24,23 +24,23 @@ const { item } = toRefs(props);
 }
 .topic-wrap {
     background: #fff;
-    padding: 25px 30px;
+    padding: 25rpx 30rpx;
     .title {
-        font-size: 32px;
+        font-size: 32rpx;
         font-family: PingFangSC-Medium, PingFang SC;
         font-weight: 500;
         color: #333333;
-        line-height: 45px;
-        margin-top: 5px;
+        line-height: 45rpx;
+        margin-top: 5rpx;
     }
     .topic-info {
         display: flex;
         align-items: center;
         justify-content: space-between;
-        height: 50px;
-        margin-top: 10px;
+        height: 50rpx;
+        margin-top: 10rpx;
         .reply {
-            font-size: 22px;
+            font-size: 22rpx;
             font-family: PingFangSC-Regular, PingFang SC;
             font-weight: 400;
             color: #999999;

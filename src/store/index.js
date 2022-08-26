@@ -16,7 +16,6 @@ export const useStore = defineStore(
     () => {
         const tabs = reactive(topTags);
 
-        let currentTabBar = ref(0);
         let currentTagIndex = ref(0);
         let currentTagName = ref('top');
 
@@ -67,29 +66,11 @@ export const useStore = defineStore(
             currentTagIndex.value = index;
             changeTagName();
         }
+
         function changeTagName() {
             currentTagName.value = tabs[currentTagIndex.value].value;
         }
-        function changeTabBar(index) {
-            if (cookie.value) {
-                switch (index) {
-                    case 0:
-                        getUserNotifications();
-                        getV2exConfig();
-                        getLoginRewardInfo();
-                        break;
-                    case 1:
-                        break;
-                    case 2:
-                        if (!userInfo.value.info) {
-                            getUserInfo();
-                        }
-                        getUserBalance();
-                        break;
-                }
-            }
-            currentTabBar.value = index;
-        }
+
         function updateMyTag(tag) {
             myTag = tag;
         }
@@ -108,6 +89,7 @@ export const useStore = defineStore(
                 updateV2exConfig(data);
             }
         }
+
         async function getLoginReward() {
             const data = await $getLoginReward();
             if (data) {
@@ -126,6 +108,7 @@ export const useStore = defineStore(
                 saveUserInfo(data);
             }
         }
+
         async function getLoginRewardInfo() {
             const data = await $getLoginRewardInfo();
             if (data) {
@@ -137,12 +120,14 @@ export const useStore = defineStore(
                 saveUserInfo(data);
             }
         }
+
         async function getUserBalance() {
             const data = await $getUserBalance();
             if (data) {
                 saveUserInfo({ balance: data });
             }
         }
+
         async function getUserInfo() {
             const data = await $getUserInfo(userInfo.value.username);
             if (data) {
@@ -151,9 +136,11 @@ export const useStore = defineStore(
                 saveUserInfo({ ...data, info });
             }
         }
+
         function saveCookie(data) {
             cookie.value = data;
         }
+
         function toggleAutoSign(data) {
             autoSign.value = data;
         }
@@ -161,6 +148,7 @@ export const useStore = defineStore(
         function saveUserInfo(data) {
             userInfo.value = { ...userInfo.value, ...data };
         }
+
         function saveHistoryTopics(data) {
             let history = historyTopic.value.reverse();
             history = history.filter(item => {
@@ -169,21 +157,29 @@ export const useStore = defineStore(
             history.push(data);
             historyTopic.value = history.slice(-30).reverse();
         }
+
         async function getUserNotifications() {
             const data = await $getUserNotifications();
             if (data) {
+                uni.setTabBarBadge({
+                    index: 2,
+                    text: data.toString()
+                });
                 saveNotifications(data);
             } else {
+                uni.removeTabBarBadge({
+                    index: 2
+                });
                 saveNotifications(0);
             }
         }
+
         return {
             allTag,
             myTag,
             currentTagIndex,
             currentTagName,
             tabs,
-            currentTabBar,
             autoSign,
             autoNavigate,
             cookie,
@@ -196,7 +192,6 @@ export const useStore = defineStore(
             v2exConfig,
             historyTopic,
             toggleAutoSign,
-            changeTabBar,
             changeTagIndex,
             updateTopicData,
             getTopicData,

@@ -15,7 +15,7 @@
             >
                 <Topic :item="item"></Topic>
             </view>
-            <view v-if="noMore" class="no-more"> 没有啦～ </view>
+            <NoMore v-if="noMore"></NoMore>
         </view>
     </view>
 </template>
@@ -24,6 +24,7 @@ import Topic from '@/components/Topic.vue';
 import { $getUserTopics } from '../service';
 import Skeleton from '@/components/Skeleton.vue';
 import LoadFaild from '@/components/LoadFaild.vue';
+import NoMore from '@/components/NoMore';
 import { reactive, ref } from 'vue';
 import { onPullDownRefresh, onReachBottom, onLoad } from '@dcloudio/uni-app';
 

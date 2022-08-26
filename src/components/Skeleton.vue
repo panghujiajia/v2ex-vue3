@@ -1,6 +1,6 @@
 <template>
     <view class="sleletion-wrap">
-        <view v-for="item in props.type === 'list' ? 7 : 1" class="topic-wrap">
+        <view v-for="item in props.type === 'list' ? 10 : 1" class="topic-wrap">
             <view class="author-info">
                 <view class="skeleton avatar"></view>
                 <view class="skeleton name"></view>
@@ -53,49 +53,49 @@ const props = defineProps({
     display: flex;
     align-items: center;
     .avatar {
-        width: 35px;
-        margin-right: 10px;
-        border-radius: 5px;
+        width: 35rpx;
+        margin-right: 10rpx;
+        border-radius: 5rpx;
     }
     .name {
-        width: 100px;
-        margin-right: 20px;
+        width: 100rpx;
+        margin-right: 20rpx;
     }
     .time {
-        width: 80px;
+        width: 80rpx;
     }
 }
 .title {
-    margin-top: 15px;
+    margin-top: 15rpx;
     .line1 {
         width: 100%;
     }
     .line2 {
         width: 80%;
-        margin-top: 10px;
+        margin-top: 10rpx;
     }
 }
 .topic-wrap {
     background: #fff;
-    padding: 25px 30px;
+    padding: 25rpx 30rpx;
     .topic-info {
         display: flex;
         align-items: center;
         justify-content: space-between;
-        height: 35px;
-        margin-top: 10px;
+        height: 35rpx;
+        margin-top: 10rpx;
         .type {
-            width: 150px;
-            border-radius: 25px;
+            width: 150rpx;
+            border-radius: 25rpx;
         }
         .reply {
-            width: 100px;
+            width: 100rpx;
         }
     }
 }
 .reply-wrap {
-    padding: 25px 30px;
-    margin-top: 10px;
+    padding: 25rpx 30rpx;
+    margin-top: 10rpx;
     .author-info {
         justify-content: space-between;
         .info {
@@ -103,20 +103,20 @@ const props = defineProps({
             align-items: center;
         }
         .floor {
-            width: 50px;
+            width: 50rpx;
         }
     }
 }
 .divider {
-    padding: 0 30px 10px;
+    padding: 0 30rpx 10rpx;
     .total {
-        height: 30px;
+        height: 30rpx;
     }
 }
 .skeleton {
     background: linear-gradient(90deg, #f2f2f2 25%, #e6e6e6 37%, #f2f2f2 63%);
     background-size: 400% 100%;
-    height: 35px;
+    height: 35rpx;
     animation: skeleton-loading 2.8s ease infinite;
 }
 @keyframes skeleton-loading {

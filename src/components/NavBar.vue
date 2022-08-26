@@ -1,5 +1,5 @@
 <template>
-    <view>
+    <view class="nav-bar-wrap">
         <scroll-view
             :scroll-into-view="'tabid_' + (current - 2)"
             class="scroll-view-content"
@@ -16,7 +16,6 @@
                 <text>{{ item.title }}</text>
             </view>
         </scroll-view>
-        <view class="placeholder-box"></view>
     </view>
 </template>
 <script setup>
@@ -33,41 +32,41 @@ function onClick(index) {
 }
 </script>
 <style lang="less" scoped>
-.placeholder-box {
-    height: 80px;
+.nav-bar-wrap {
+    height: 80rpx;
 }
 .scroll-view-content {
     position: fixed;
     top: 0;
     left: 0;
     z-index: 999;
-    border-bottom: 1px solid #f5f5f5;
+    border-bottom: 1rpx solid #f5f5f5;
     background: #fff;
-    height: 80px;
-    line-height: 80px;
+    height: 80rpx;
+    line-height: 80rpx;
     white-space: nowrap;
     box-sizing: border-box;
     .item {
         display: inline-block;
         color: #666;
-        font-size: 26px;
+        font-size: 26rpx;
         &:last-child {
-            margin-right: 20px;
+            margin-right: 20rpx;
         }
         &:first-child {
-            margin-left: 10px;
+            margin-left: 10rpx;
         }
         text {
-            margin: 0 20px;
+            margin: 0 20rpx;
             font-family: PingFangSC-Medium, PingFang SC;
-            border-bottom: 4px solid transparent;
+            border-bottom: 4rpx solid transparent;
         }
         &.cur {
-            font-size: 32px;
+            font-size: 32rpx;
             font-weight: bold;
             color: #4474ff;
             text {
-                border-bottom: 4px solid #4474ff;
+                border-bottom: 4rpx solid #4474ff;
             }
         }
     }

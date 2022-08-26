@@ -5,19 +5,19 @@
             type="detail"
         ></Skeleton>
         <LoadFaild
-            v-else-if="!topicsDetail.title"
+            v-else-if="!topicDetail.title"
             :status="true"
             @reload="loadData()"
         ></LoadFaild>
         <template v-else>
             <view class="topic-wrap">
-                <AuthorInfo :item="topicsDetail"></AuthorInfo>
-                <view class="title">{{ topicsDetail.title }}</view>
-                <MarkDown :content="topicsDetail.content"></MarkDown>
+                <AuthorInfo :item="topicDetail"></AuthorInfo>
+                <view class="title">{{ topicDetail.title }}</view>
+                <MarkDown :content="topicDetail.content"></MarkDown>
             </view>
-            <view v-if="topicsDetail.subtle_list.length" class="subtle-wrap">
+            <view v-if="topicDetail.subtle_list.length" class="subtle-wrap">
                 <template
-                    v-for="(item, index) in topicsDetail.subtle_list"
+                    v-for="(item, index) in topicDetail.subtle_list"
                     :key="index"
                 >
                     <view class="title">
@@ -29,7 +29,7 @@
                 </template>
             </view>
             <view class="tag-info">
-                <TopicTag :item="topicsDetail"></TopicTag>
+                <TopicTag :item="topicDetail"></TopicTag>
                 <view class="floor-wrap">
                     <image
                         class="reply-icon"
@@ -39,11 +39,11 @@
                     <view class="floor">OP</view>
                 </view>
             </view>
-            <view v-if="topicsDetail.reply_num" class="reply-num">
-                {{ topicsDetail.reply_num }}条回复
+            <view v-if="topicDetail.reply_num" class="reply-num">
+                {{ topicDetail.reply_num }}条回复
             </view>
             <view
-                v-for="(item, index) in topicsDetail.reply_list"
+                v-for="(item, index) in topicDetail.reply_list"
                 :key="index"
                 :class="item.author"
                 class="topic-wrap topic-reply"
@@ -63,55 +63,37 @@
                 </view>
                 <MarkDown :content="item.content"></MarkDown>
             </view>
-            <view v-if="replyBox" class="reply-wrap">
-                <textarea
-                    :hold-keyboard="true"
-                    :maxlength="-1"
-                    :show-confirm-bar="false"
-                    :value="content"
-                    auto-focus
-                    class="textarea"
-                    fixed
-                    placeholder="请输入内容"
-                    placeholder-style="font-size: 28px;color: #999;"
-                    @input="onInputChange"
-                />
-                <view class="tip">
-                    <view>请尽量让自己的回复能够对别人有帮助</view>
-                    <view>若提交失败请尝试重新登录</view>
-                </view>
-                <view class="btn-wrap">
-                    <view class="reply-btn cancel-btn" @click="cancelReply()">
-                        取消
-                    </view>
-                    <view class="reply-btn" @click="confirmReply()">
-                        提交
-                    </view>
-                </view>
-            </view>
+            <ReplyBox
+                v-if="showReply"
+                ref="replyBoxRef"
+                :replyWho="replyWho"
+                :topic="topicDetail"
+            ></ReplyBox>
             <!-- #ifdef MP-WEIXIN -->
             <ad unit-id="adunit-6996f541fca34984"></ad>
             <!-- #endif -->
-            <view v-if="noMore" class="no-more">
-                没有了，去看看别的或休息一下吧
-            </view>
+            <NoMore v-if="noMore"></NoMore>
         </template>
     </view>
 </template>
 <script setup>
 import { reactive, ref } from 'vue';
-import { $getTopicDetail, $replyTopic } from '../service';
+import { $getTopicDetail } from '../service';
 import AuthorInfo from '@/components/AuthorInfo';
 import TopicTag from '@/components/TopicTag';
 import Skeleton from '@/components/Skeleton';
 import MarkDown from '@/components/MarkDown';
+import LoadFaild from '@/components/LoadFaild';
+import ReplyBox from '@/components/ReplyBox.vue';
+import NoMore from '@/components/NoMore';
 import { onPullDownRefresh, onReachBottom, onLoad } from '@dcloudio/uni-app';
 import { useStore } from '../store';
 
 const store = useStore();
 let loading = ref(true);
-let replyBox = ref(false);
-let content = ref('');
+let showReply = ref(false);
+let replyWho = ref(null);
+let replyBoxRef = ref(null);
 let params = reactive({
     id: '',
     p: 1
@@ -119,7 +101,7 @@ let params = reactive({
 let totalPage = ref(1);
 let loadType = ref('refresh');
 let noMore = ref(false);
-let topicsDetail = ref({
+let topicDetail = ref({
     reply_list: [],
     subtle_list: []
 });
@@ -129,17 +111,18 @@ onLoad(() => {
     loadData();
 });
 async function loadData() {
-    const replyList = topicsDetail.value.reply_list || [];
+    loading.value = true;
+    const replyList = topicDetail.value.reply_list || [];
     const res = await $getTopicDetail(params);
     if (res) {
         let { reply_list, page, once } = res;
         if (params.p === 1) {
-            topicsDetail.value = res;
-            uni.setNavigationBarTitle({ title: topicsDetail.value.title });
+            topicDetail.value = res;
+            uni.setNavigationBarTitle({ title: topicDetail.value.title });
             totalPage.value = page || 1;
             store.saveHistoryTopics(res);
         }
-        topicsDetail.value.once = once;
+        topicDetail.value.once = once;
         reply_list = reply_list.map(item => {
             return {
                 ...item,
@@ -150,11 +133,11 @@ async function loadData() {
             };
         });
         if (loadType.value === 'refresh') {
-            topicsDetail.value.reply_list = reply_list;
+            topicDetail.value.reply_list = reply_list;
             uni.stopPullDownRefresh();
         } else {
             if (!noMore.value) {
-                topicsDetail.value.reply_list = [...replyList, ...reply_list];
+                topicDetail.value.reply_list = [...replyList, ...reply_list];
             }
         }
         if (params.p >= totalPage.value) {
@@ -163,55 +146,14 @@ async function loadData() {
     }
     loading.value = false;
 }
-function onInputChange(e) {
-    const {
-        detail: { value }
-    } = e;
-    content.value = value;
-}
-async function confirmReply() {
-    const { once, id } = topicsDetail.value;
-    if (!content.value) {
-        uni.showToast({
-            title: '回复内容不能为空',
-            icon: 'none'
-        });
-        return;
-    }
-    const params = {
-        once,
-        id,
-        content: content.value
-    };
-    const data = await $replyTopic(params);
-    if (data) {
-        replyBox.value = false;
-        content.value = '';
-        params.p = 1;
-        loadType.value = 'loadMore';
-        noMore.value = false;
-        await loadData();
-        uni.pageScrollTo({
-            scrollTop: 999999
-        });
-    } else {
-        uni.showToast({
-            title: '回复失败，请重试',
-            icon: 'none'
-        });
-    }
-}
-function cancelReply() {
-    replyBox.value = false;
-    content.value = '';
-}
 function replyTopic(item) {
+    return;
     if (!store.cookie) {
         uni.showModal({
             title: '提示',
             content: '登录后才能回帖',
             confirmText: '去登录',
-            cancelText: '算了',
+            cancelText: '取消',
             success: ({ confirm }) => {
                 if (confirm) {
                     uni.navigateTo({ url: '/pages/Login' });
@@ -220,13 +162,10 @@ function replyTopic(item) {
         });
         return;
     }
-    if (item) {
-        const { author } = item;
-        content.value = content.value
-            ? `${content.value}\n@${author} `
-            : `@${author} `;
-    }
-    replyBox.value = true;
+    showReply.value = true;
+    replyWho.value = item;
+    console.log(replyBoxRef.value);
+    replyBoxRef.value.changesFun();
 }
 onPullDownRefresh(refresh);
 function refresh() {
@@ -252,72 +191,24 @@ text {
 .subtle-wrap {
     background: #fffff9;
     color: #666;
-    padding: 0 30px 25px;
+    padding: 25rpx 30rpx;
     .title {
-        padding-top: 25px;
-        font-size: 24px;
-        border-top: 2px solid #f5f5f5;
+        font-size: 26rpx;
+        margin-bottom: 10rpx;
     }
-}
-.reply-btn {
-    padding: 0 20px;
-    height: 50px;
-    text-align: center;
-    line-height: 50px;
-    background: #4474ff;
-    color: #fff;
-    font-size: 28px;
-    border-radius: 8px;
-}
-.reply-wrap {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 400px;
-    padding: 20px;
-    box-sizing: border-box;
-    background: #fff;
-    box-shadow: 0 0 20px #dedede;
-    z-index: 9999;
-    display: flex;
-    flex-direction: column;
-    .textarea {
-        background: #fff;
-        width: 100%;
-        flex: 1;
-        border: 1px solid #dedede;
-        margin-bottom: 10px;
-        padding: 10px;
-        box-sizing: border-box;
-    }
-    .tip {
-        font-size: 26px;
-        color: #999;
-        margin-bottom: 10px;
-    }
-    .btn-wrap {
-        align-self: flex-end;
-    }
-    .reply-btn {
-        display: inline-block;
-        padding: 0 20px;
-        height: 50px;
-        text-align: center;
-        line-height: 50px;
-        background: #4474ff;
-        color: #fff;
-        font-size: 28px;
-        border-radius: 8px;
-    }
-    .cancel-btn {
-        background: #efefef;
-        color: #999;
-        margin-right: 20px;
+    .content {
+        margin-bottom: 30rpx;
+        padding-bottom: 30rpx;
+        border-bottom: 2rpx solid #f5f5f5;
+        &:last-child {
+            border-bottom: 0;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
     }
 }
 .topic-wrap {
-    padding: 25px 30px;
+    padding: 25rpx 30rpx;
     background: #fff;
     .user-info {
         display: flex;
@@ -325,50 +216,50 @@ text {
         align-items: center;
     }
     .title {
-        font-size: 32px;
+        font-size: 32rpx;
         color: #333;
-        line-height: 45px;
+        line-height: 45rpx;
         font-weight: bold;
-        margin: 20px 0;
+        margin: 20rpx 0;
     }
 }
 .tag-info {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 25px 30px;
+    padding: 25rpx 30rpx;
     background: #fff;
 }
 .floor-wrap {
     display: flex;
     align-items: center;
     .reply-icon {
-        width: 30px;
-        height: 30px;
-        margin-right: 15px;
+        width: 30rpx;
+        height: 30rpx;
+        margin-right: 15rpx;
     }
     .floor {
         color: #999;
-        font-size: 22px;
+        font-size: 22rpx;
     }
 }
 .reply-num {
-    height: 50px;
-    line-height: 50px;
-    padding: 0 30px;
+    height: 50rpx;
+    line-height: 50rpx;
+    padding: 0 30rpx;
     background: #f5f5f5;
     color: #999;
-    font-size: 22px;
+    font-size: 22rpx;
     font-weight: 400;
 }
 .topic-reply {
-    padding-bottom: 20px;
-    border-bottom: 20px solid #f5f5f5;
+    padding-bottom: 20rpx;
+    border-bottom: 20rpx solid #f5f5f5;
     /deep/rich-text {
         font-weight: 500;
     }
     .user-info {
-        margin-bottom: 10px;
+        margin-bottom: 10rpx;
     }
 }
 </style>

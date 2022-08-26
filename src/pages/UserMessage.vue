@@ -80,7 +80,7 @@
                     </view>
                 </view>
             </view>
-            <view v-if="noMore" class="no-more"> 没有啦～ </view>
+            <NoMore v-if="noMore"></NoMore>
         </view>
     </view>
 </template>
@@ -90,6 +90,7 @@ import MarkDown from '@/components/MarkDown.vue';
 import LoadFaild from '@/components/LoadFaild.vue';
 import { reactive, ref } from 'vue';
 import { onPullDownRefresh, onReachBottom, onLoad } from '@dcloudio/uni-app';
+import { useStore } from '../store';
 
 let loading = ref(true);
 let noMore = ref(false);
@@ -103,6 +104,8 @@ let params = reactive({
 let nodeInfo = ref({
     message_count: 0
 });
+
+const store = useStore();
 onLoad(() => {
     store.saveNotifications(0);
     getList();
@@ -183,8 +186,8 @@ function loadMore() {
 <style lang="less" scoped>
 .list-wrap {
     .item {
-        font-size: 28px;
-        padding: 25px 30px;
+        font-size: 28rpx;
+        padding: 25rpx 30rpx;
         background: #fff;
         /deep/.user-name {
             color: #4474ff;
@@ -207,22 +210,22 @@ function loadMore() {
                 color: #999;
             }
             .message-title {
-                padding: 10px 0;
-                line-height: 50px;
+                padding: 10rpx 0;
+                line-height: 50rpx;
                 image {
-                    width: 30px;
-                    height: 30px;
-                    border-radius: 5px;
+                    width: 30rpx;
+                    height: 30rpx;
+                    border-radius: 5rpx;
                     vertical-align: middle;
                 }
                 text {
-                    margin: 0 10px;
+                    margin: 0 10rpx;
                 }
             }
         }
         .message-content {
             background: #f9f9f9;
-            padding: 10px 20px;
+            padding: 10rpx 20rpx;
         }
     }
 }

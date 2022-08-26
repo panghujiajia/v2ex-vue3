@@ -1,0 +1,31 @@
+{
+    "short_name": "V2EX",
+    "name": "way to explore",
+    "description": "way to explore",
+    "icons": [
+        {
+            "src": "logo.png",
+            "sizes": "48x48",
+            "type": "image/png"
+        },
+        {
+            "src": "logo.png",
+            "sizes": "72x72",
+            "type": "image/png"
+        },
+        {
+            "src": "logo.png",
+            "type": "image/png",
+            "sizes": "96x96"
+        },
+        {
+            "src": "logo.png",
+            "type": "image/png",
+            "sizes": "144x144"
+        }
+    ],
+    "start_url": "/",
+    "display": "standalone",
+    "theme_color": "#fff",
+    "background_color": "#ffffff"
+}

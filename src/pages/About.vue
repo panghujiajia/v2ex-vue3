@@ -53,25 +53,25 @@ function previewImg(url) {
 <style lang="less" scoped>
 .container {
     background: #fff;
-    padding: 30px;
+    padding: 30rpx;
     view {
-        font-size: 32px;
+        font-size: 32rpx;
         color: #666;
-        line-height: 50px;
-        margin-bottom: 20px;
+        line-height: 50rpx;
+        margin-bottom: 20rpx;
     }
     .link {
         color: #0969da;
         font-weight: bold;
-        font-size: 34px;
-        margin: 0 10px;
+        font-size: 34rpx;
+        margin: 0 10rpx;
         text-decoration: underline;
     }
     .payment-img {
-        width: 500px;
-        height: 500px;
+        width: 500rpx;
+        height: 500rpx;
         display: block;
-        margin: 30px auto;
+        margin: 30rpx auto;
     }
 }
 </style>
