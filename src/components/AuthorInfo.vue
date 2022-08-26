@@ -3,9 +3,12 @@
         <image
             :src="props.item.avatar"
             class="avatar"
-            @click="getUserTopic(props.item.author)"
+            @click.stop.prevent="getUserTopic(props.item.author)"
         ></image>
-        <view class="name" @click="getUserTopic(props.item.author)">
+        <view
+            class="name"
+            @click.stop.prevent="getUserTopic(props.item.author)"
+        >
             {{ props.item.author }}
         </view>
         <view class="time">
