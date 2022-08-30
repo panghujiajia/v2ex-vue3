@@ -5,7 +5,6 @@
             v-else
             :scroll-y="true"
             class="list-wrap"
-            scroll-with-animation
             @touchmove.prevent.stop="
                 () => {
                     return false;

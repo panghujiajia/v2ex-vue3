@@ -19,6 +19,7 @@ let index = ref(Math.floor(Math.random() * tips.value.length));
 </script>
 <style lang="less" scoped>
 .no-more {
+    background: #fff;
     text-align: center;
     padding: 20rpx 0;
     font-family: PingFangSC-Regular, PingFang SC;

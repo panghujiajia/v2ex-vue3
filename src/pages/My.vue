@@ -2,7 +2,6 @@
     <scroll-view
         :scroll-y="true"
         class="scroll-view"
-        scroll-with-animation
         @touchmove.prevent.stop="
             () => {
                 return false;

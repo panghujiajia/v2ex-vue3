@@ -1,51 +1,86 @@
 <template>
-    <view class="reply-wrap">
-        <textarea
-            :hold-keyboard="true"
-            :maxlength="-1"
-            :show-confirm-bar="false"
-            :value="content"
-            auto-focus
-            class="textarea"
-            fixed
-            placeholder="请输入内容"
-            placeholder-style="font-size: 28rpx;color: #999;"
-            @input="onInputChange"
-        />
-        <view class="tip">
-            <view>请尽量让自己的回复能够对别人有帮助</view>
-            <view>若提交失败请尝试重新登录</view>
-        </view>
-        <view class="btn-wrap">
-            <view class="reply-btn cancel-btn" @click="cancelReply()">
-                取消
+    <view
+        :style="{
+            opacity: replyVisible ? 1 : 0,
+            visibility: replyVisible ? 'visible' : 'hidden'
+        }"
+        class="reply-container"
+        @click="hideReply"
+    >
+        <view
+            :style="{
+                transform: `translateY(${boxBottom}px)`
+            }"
+            class="reply-wrap"
+            @click.stop.prevent="
+                () => {
+                    return false;
+                }
+            "
+        >
+            <view class="content-box">
+                <textarea
+                    :adjust-position="false"
+                    :focus="isFocus"
+                    :maxlength="-1"
+                    :show-confirm-bar="false"
+                    :value="content"
+                    auto-focus
+                    auto-height
+                    class="textarea"
+                    fixed
+                    placeholder="请输入内容"
+                    @input="onInputChange"
+                />
+                <view class="tip">
+                    <view>请尽量让自己的回复能够对别人有帮助</view>
+                    <view>若提交失败请尝试重新登录</view>
+                </view>
             </view>
-            <view class="reply-btn" @click="confirmReply()"> 提交 </view>
+            <view
+                :class="!content ? 'disabled' : ''"
+                class="reply-btn"
+                @click.stop.prevent="confirmReply()"
+            >
+                提交
+            </view>
         </view>
     </view>
 </template>
 <script setup>
-import { ref, watch } from 'vue';
+import { nextTick, ref, watch } from 'vue';
 import { $replyTopic } from '../service';
 
 let content = ref('');
-let replyBox = ref(false);
-const props = defineProps(['replyWho', 'topic']);
-console.log(props.replyWho);
-watch(props.replyWho, (oldVal, newVal) => {
-    console.log(oldVal, newVal);
-    if (newVal) {
-        const { author } = props.replyWho;
-        content.value = content.value
-            ? `${content.value}\n@${author} `
-            : `@${author} `;
+let isFocus = ref(false);
+let boxBottom = ref(1000);
+let replyVisible = ref(false);
+const props = defineProps(['replyWho', 'topic', 'show']);
+const emit = defineEmits(['replySuccess']);
+watch(
+    () => props.replyWho,
+    (newVal, oldVal) => {
+        if (newVal) {
+            if (props.replyWho.value) {
+                const { author } = props.replyWho;
+                content.value = `${content.value}\n@${author} `;
+            }
+        }
     }
-});
-function changesFun() {
-    console.log(1111);
+);
+function showReply() {
+    replyVisible.value = true;
+    isFocus.value = true;
+    boxBottom.value = 0;
 }
-defineExpose({ changesFun });
-function onInputChange(e) {
+function hideReply() {
+    replyVisible.value = false;
+    isFocus.value = false;
+    boxBottom.value = 1000;
+}
+defineExpose({ showReply });
+
+async function onInputChange(e) {
     const {
         detail: { value }
     } = e;
@@ -54,10 +89,6 @@ function onInputChange(e) {
 async function confirmReply() {
     const { once, id } = props.topic;
     if (!content.value) {
-        uni.showToast({
-            title: '回复内容不能为空',
-            icon: 'none'
-        });
         return;
     }
     const params = {
@@ -68,13 +99,7 @@ async function confirmReply() {
     const data = await $replyTopic(params);
     if (data) {
         content.value = '';
-        // params.p = 1;
-        // loadType.value = 'refresh';
-        // noMore.value = false;
-        // await loadData();
-        uni.pageScrollTo({
-            scrollTop: 999999
-        });
+        emit('replySuccess');
     } else {
         uni.showToast({
             title: '回复失败，请重试',
@@ -82,66 +107,63 @@ async function confirmReply() {
         });
     }
 }
-function cancelReply() {
-    content.value = '';
-}
 </script>
 <style lang="less" scoped>
-.reply-btn {
-    padding: 0 20rpx;
-    height: 50rpx;
-    text-align: center;
-    line-height: 50rpx;
-    background: #4474ff;
-    color: #fff;
-    font-size: 28rpx;
-    border-radius: 8rpx;
-}
-.reply-wrap {
+.reply-container {
     position: fixed;
     top: 0;
     left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.4);
+    opacity: 0;
+    transition: all linear 0.2s;
+}
+.reply-wrap {
+    position: absolute;
+    left: 0;
+    bottom: 0;
     width: 100vw;
-    height: 400rpx;
-    padding: 20rpx;
+    padding: 25rpx 30rpx 360px;
     box-sizing: border-box;
     background: #fff;
-    box-shadow: 0 0 20rpx #dedede;
-    z-index: 9999;
-    display: flex;
-    flex-direction: column;
-    .textarea {
-        background: #fff;
-        width: 100%;
-        flex: 1;
-        border: 1rpx solid #dedede;
-        margin-bottom: 10rpx;
-        padding: 10rpx;
-        box-sizing: border-box;
-    }
-    .tip {
-        font-size: 26rpx;
-        color: #999;
-        margin-bottom: 10rpx;
-    }
-    .btn-wrap {
-        align-self: flex-end;
+    height: auto;
+    transition: all linear 0.2s;
+    border-radius: 20rpx 20rpx 0 0;
+    transform: translateY(1000px);
+    .content-box {
+        word-break: break-all;
+        .textarea {
+            line-height: 44rpx;
+            margin-right: 100rpx;
+            width: calc(100% - 100rpx);
+        }
+        .tip {
+            color: #999;
+            margin-top: 10rpx;
+            view {
+                font-size: 22rpx;
+                line-height: 34rpx;
+            }
+        }
     }
     .reply-btn {
         display: inline-block;
-        padding: 0 20rpx;
-        height: 50rpx;
         text-align: center;
+        width: 80rpx;
+        height: 50rpx;
         line-height: 50rpx;
         background: #4474ff;
         color: #fff;
-        font-size: 28rpx;
-        border-radius: 8rpx;
-    }
-    .cancel-btn {
-        background: #efefef;
-        color: #999;
-        margin-right: 20rpx;
+        font-size: 26rpx;
+        border-radius: 5rpx;
+        position: absolute;
+        z-index: 10;
+        top: 20rpx;
+        right: 20rpx;
+        &.disabled {
+            background: #dedede;
+        }
     }
 }
 </style>

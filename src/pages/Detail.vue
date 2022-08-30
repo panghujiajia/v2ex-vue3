@@ -64,10 +64,10 @@
                 <MarkDown :content="item.content"></MarkDown>
             </view>
             <ReplyBox
-                v-if="showReply"
                 ref="replyBoxRef"
                 :replyWho="replyWho"
                 :topic="topicDetail"
+                @replySuccess="refresh()"
             ></ReplyBox>
             <!-- #ifdef MP-WEIXIN -->
             <ad unit-id="adunit-6996f541fca34984"></ad>
@@ -91,7 +91,6 @@ import { useStore } from '../store';
 
 const store = useStore();
 let loading = ref(true);
-let showReply = ref(false);
 let replyWho = ref(null);
 let replyBoxRef = ref(null);
 let params = reactive({
@@ -147,7 +146,6 @@ async function loadData() {
     loading.value = false;
 }
 function replyTopic(item) {
-    return;
     if (!store.cookie) {
         uni.showModal({
             title: '提示',
@@ -162,10 +160,8 @@ function replyTopic(item) {
         });
         return;
     }
-    showReply.value = true;
     replyWho.value = item;
-    console.log(replyBoxRef.value);
-    replyBoxRef.value.changesFun();
+    replyBoxRef.value.showReply();
 }
 onPullDownRefresh(refresh);
 function refresh() {

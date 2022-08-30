@@ -33,12 +33,7 @@
                     :status="true"
                     @reload="getData()"
                 ></LoadFaild>
-                <scroll-view
-                    v-else
-                    :scroll-y="scrollY"
-                    class="list-wrap"
-                    scroll-with-animation
-                >
+                <scroll-view v-else :scroll-y="scrollY" class="list-wrap">
                     <view
                         v-for="(item, index) in list"
                         :key="index"
