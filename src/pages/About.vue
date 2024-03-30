@@ -13,13 +13,16 @@
         </view>
         <view>
             同时，我也将小程序的
-            <text class="link" @click="setClipboard(v2ex, 'github')">
-                前端代码
-            </text>
+            <text class="link" @click="setClipboard(v2exVue2, 'github')">
+                前端代码(vue2版本)</text
+            >
+            <text class="link" @click="setClipboard(v2exVue3, 'github')">
+                前端代码(vue3重构版)</text
+            >
             和
             <text class="link" @click="setClipboard(v2exApi, 'github')">
-                后端代码
-            </text>
+                后端代码</text
+            >
             放在了我的github，感兴趣的可以复制链接查看。
         </view>
         <view>希望你也可以给我个star，谢谢！</view>
@@ -28,7 +31,8 @@
 <script setup>
 import { ref } from 'vue';
 
-let v2ex = ref('https://github.com/panghujiajia/v2ex.git');
+let v2exVue2 = ref('https://github.com/panghujiajia/v2ex.git');
+let v2exVue3 = ref('https://github.com/panghujiajia/v2ex-vue3.git');
 let v2exApi = ref('https://github.com/panghujiajia/v2ex-api-nestjs.git');
 let wechat = ref('GooodTimes');
 
@@ -53,25 +57,25 @@ function previewImg(url) {
 <style lang="less" scoped>
 .container {
     background: #fff;
-    padding: 30px;
+    padding: 30rpx;
     view {
-        font-size: 32px;
+        font-size: 32rpx;
         color: #666;
-        line-height: 50px;
-        margin-bottom: 20px;
+        line-height: 50rpx;
+        margin-bottom: 20rpx;
     }
     .link {
         color: #0969da;
         font-weight: bold;
-        font-size: 34px;
-        margin: 0 10px;
+        font-size: 34rpx;
+        margin: 0 10rpx;
         text-decoration: underline;
     }
     .payment-img {
-        width: 500px;
-        height: 500px;
+        width: 500rpx;
+        height: 500rpx;
         display: block;
-        margin: 30px auto;
+        margin: 30rpx auto;
     }
 }
 </style>

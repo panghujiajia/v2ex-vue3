@@ -1,7 +1,55 @@
 {
+    "tabBar": {
+        "color": "#999999",
+        "selectedColor": "#4474FF",
+        // #ifndef MP-WEIXIN
+        "borderStyle": "#f0f0f0",
+        // #endif
+
+        // #ifdef MP-WEIXIN
+        "borderStyle": "black",
+        // #endif
+        "backgroundColor": "#ffffff",
+        "list": [
+            {
+                "pagePath": "pages/Index",
+                "iconPath": "static/icons/top-bright.png",
+                "selectedIconPath": "static/icons/top-cur.png",
+                "text": "热门"
+            },
+            {
+                "pagePath": "pages/All",
+                "iconPath": "static/icons/all-bright.png",
+                "selectedIconPath": "static/icons/all-cur.png",
+                "text": "全部"
+            },
+            {
+                "pagePath": "pages/My",
+                "iconPath": "static/icons/user-bright.png",
+                "selectedIconPath": "static/icons/user-cur.png",
+                "text": "我的"
+            }
+        ]
+    },
     "pages": [
         {
-            "path": "components/TabBarPage",
+            "path": "pages/Index",
+            "style": {
+                // #ifdef H5
+                "navigationStyle": "custom"
+                // #endif H5
+            }
+        },
+        {
+            "path": "pages/All",
+            "style": {
+                // #ifdef H5
+                "navigationStyle": "custom"
+                // #endif H5
+            }
+        },
+        {
+            "path": "pages/My",
             "style": {
                 // #ifdef H5
                 "navigationStyle": "custom"
@@ -80,9 +128,11 @@
     ],
     "globalStyle": {
         "navigationBarTextStyle": "black",
-        "navigationBarTitleText": "v2ex",
+        "navigationBarTitleText": "V2EX",
         "navigationBarBackgroundColor": "#fff",
         "backgroundColor": "#FFF",
-        "scrollIndicator": "none"
+        "scrollIndicator": "none",
+        "rpxCalcMaxDeviceWidth": 640,
+        "rpxCalcBaseDeviceWidth": 375
     }
 }

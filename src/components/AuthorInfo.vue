@@ -3,9 +3,12 @@
         <image
             :src="props.item.avatar"
             class="avatar"
-            @click="getUserTopic(props.item.author)"
+            @click.stop.prevent="getUserTopic(props.item.author)"
         ></image>
-        <view class="name" @click="getUserTopic(props.item.author)">
+        <view
+            class="name"
+            @click.stop.prevent="getUserTopic(props.item.author)"
+        >
             {{ props.item.author }}
         </view>
         <view class="time">
@@ -41,42 +44,42 @@ function getUserTopic(username) {
     display: flex;
     align-items: center;
     .avatar {
-        width: 30px;
-        height: 30px;
-        margin-right: 10px;
-        border-radius: 5px;
+        width: 30rpx;
+        height: 30rpx;
+        margin-right: 10rpx;
+        border-radius: 5rpx;
     }
     .name {
-        font-size: 28px;
+        font-size: 28rpx;
         font-family: PingFangSC-Medium, PingFang SC;
         font-weight: 500;
         color: #666666;
-        margin-right: 20px;
+        margin-right: 20rpx;
     }
     .time {
-        font-size: 22px;
+        font-size: 22rpx;
         font-family: PingFangSC-Regular, PingFang SC;
         font-weight: 400;
         color: #999999;
     }
     .op {
-        border: 2px solid #1484cd;
+        border: 2rpx solid #1484cd;
         color: #1484cd;
-        font-size: 20px;
-        border-radius: 7px;
+        font-size: 20rpx;
+        border-radius: 7rpx;
         font-weight: 500;
-        padding: 5px;
-        line-height: 16px;
-        margin-left: 10px;
+        padding: 5rpx;
+        line-height: 16rpx;
+        margin-left: 10rpx;
     }
     .like-icon {
-        width: 20px;
-        height: 20px;
-        margin-left: 10px;
-        margin-right: 5px;
+        width: 20rpx;
+        height: 20rpx;
+        margin-left: 10rpx;
+        margin-right: 5rpx;
     }
     .like-num {
-        font-size: 22px;
+        font-size: 22rpx;
         color: #999;
         font-weight: 400;
     }

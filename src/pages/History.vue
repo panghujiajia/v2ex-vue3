@@ -1,20 +1,10 @@
 <template>
     <view class="container">
-        <view v-if="!historyTopic.length" class="load-failed">
-            <view class="reload">
-                <image
-                    class="empty-img"
-                    src="https://img01.yzcdn.cn/vant/empty-image-default.png"
-                >
-                </image>
-                <view class="empty-desc">暂无访问记录</view>
-            </view>
-        </view>
+        <LoadFaild v-if="!historyTopic.length" :status="false"></LoadFaild>
         <scroll-view
             v-else
             :scroll-y="true"
             class="list-wrap"
-            scroll-with-animation
             @touchmove.prevent.stop="
                 () => {
                     return false;
@@ -29,12 +19,14 @@
             >
                 <Topic :item="item"></Topic>
             </view>
-            <view class="no-more">只展示最近访问的30条</view>
+            <NoMore>只展示最近访问的30条</NoMore>
         </scroll-view>
     </view>
 </template>
 <script setup>
 import Topic from '@/components/Topic.vue';
+import LoadFaild from '@/components/LoadFaild';
+import NoMore from '@/components/NoMore';
 import { useStore } from '../store';
 import { storeToRefs } from 'pinia';
 
@@ -48,6 +40,6 @@ function getTopicsDetail(id) {
 </script>
 <style lang="less" scoped>
 .container {
-    height: calc(100vh - env(safe-area-inset-bottom));
+    height: calc(100% - env(safe-area-inset-bottom));
 }
 </style>

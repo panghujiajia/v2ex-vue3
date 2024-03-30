@@ -2,7 +2,6 @@
     <scroll-view
         :scroll-y="true"
         class="scroll-view"
-        scroll-with-animation
         @touchmove.prevent.stop="
             () => {
                 return false;
@@ -118,24 +117,24 @@ function onShareAppMessage(e) {
 }
 .my-tags,
 .tag-wrap {
-    padding: 20px;
+    padding: 20rpx;
     .title {
-        line-height: 80px;
-        margin-bottom: 20px;
-        font-size: 30px;
+        line-height: 80rpx;
+        margin-bottom: 20rpx;
+        font-size: 30rpx;
         font-weight: bold;
     }
     .tag,
     .my-tag {
-        line-height: 60px;
-        padding: 0 20px;
+        line-height: 60rpx;
+        padding: 0 20rpx;
         background: #f2f2f2;
-        border-radius: 10px;
-        font-size: 24px;
-        height: 60px;
+        border-radius: 10rpx;
+        font-size: 24rpx;
+        height: 60rpx;
         display: inline-block;
         vertical-align: top;
-        margin: 0 20px 20px 0;
+        margin: 0 20rpx 20rpx 0;
         &.cur {
             background: darkgray;
             color: #fff;
@@ -158,12 +157,12 @@ function onShareAppMessage(e) {
             }
         }
         &.touch {
-            box-shadow: 0 0 13px #ccc;
+            box-shadow: 0 0 13rpx #ccc;
         }
     }
     .edit {
         background: #fff;
-        border: 2px solid #dedede;
+        border: 2rpx solid #dedede;
         box-sizing: border-box;
         color: #666;
     }

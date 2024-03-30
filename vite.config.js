@@ -7,15 +7,15 @@ export default defineConfig({
     css: {
         postcss: {
             plugins: [
-                postcsspxtoviewport({
-                    viewportWidth: 750,
-                    viewportHeight: 1334,
-                    unitPrecision: 3,
-                    viewportUnit: 'vw',
-                    selectorBlackList: ['ignore', 'uni'],
-                    minPixelValue: 1,
-                    mediaQuery: false
-                })
+                // postcsspxtoviewport({
+                //     viewportWidth: 750,
+                //     viewportHeight: 1334,
+                //     unitPrecision: 3,
+                //     viewportUnit: 'vw',
+                //     selectorBlackList: ['ignore', 'uni'],
+                //     minPixelValue: 1,
+                //     mediaQuery: false
+                // })
             ]
         }
     }

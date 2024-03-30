@@ -37,8 +37,11 @@
                     />
                     <image
                         :src="
-                            captchaBase64 ||
-                            'https://cdn.todayhub.cn/lib/image/code-loading.gif'
+                            captchaBase64
+                                ? captchaBase64
+                                : captchaBase64 === ''
+                                ? 'https://cdn.todayhub.cn/lib/image/code-loading.gif'
+                                : 'https://cdn.todayhub.cn/lib/image/icon-img-fail.png'
                         "
                         class="code"
                         @click="getLoginParams()"
@@ -87,11 +90,10 @@ async function getLoginParams() {
     if (data) {
         const { codeUrl } = data;
         signinData.value = data;
-        captchaBase64.value =
-            'data:image/png;base64,' +
-            uni.arrayBufferToBase64(new Uint8Array(codeUrl.data));
-    } else {
-        getLoginParams();
+        captchaBase64.value = codeUrl.data
+            ? 'data:image/png;base64,' +
+              uni.arrayBufferToBase64(new Uint8Array(codeUrl.data))
+            : false;
     }
 }
 // 获取输入的验证码
@@ -174,11 +176,11 @@ async function login() {
 </script>
 <style lang="less" scoped>
 .container {
-    min-height: 100vh;
+    height: 100%;
     background: #efefef;
     box-sizing: border-box;
     .top {
-        height: 600px;
+        height: 600rpx;
         background: url(https://cdn.todayhub.cn/lib/image/bg-user-center.png)
             50% no-repeat;
         background-size: 100%;
@@ -188,26 +190,25 @@ async function login() {
         justify-content: center;
         align-items: center;
         .title {
-            width: 690px;
-            height: 400px;
-            line-height: 70px;
+            width: 690rpx;
+            height: 400rpx;
+            line-height: 70rpx;
             color: #fff;
             view {
-                font-size: 48px;
+                font-size: 48rpx;
                 font-weight: bold;
             }
         }
     }
 }
 .cell-group {
-    width: 690px;
-    margin: 0 auto;
-    margin-top: -250px;
-    border-radius: 16px 16px 0 0;
+    margin: 0 30rpx;
+    margin-top: -250rpx;
+    border-radius: 16rpx 16rpx 0 0;
     position: relative;
     box-sizing: border-box;
     z-index: 2;
-    min-height: calc(100vh - 350px);
+    height: calc(100% - 350rpx);
     background: #fff;
     .cell {
         display: flex;
@@ -215,49 +216,49 @@ async function login() {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        height: 100px;
-        line-height: 100px;
-        padding: 0 30px 0 40px;
+        height: 100rpx;
+        line-height: 100rpx;
+        padding: 0 30rpx 0 40rpx;
         box-sizing: border-box;
-        border-bottom: 1px solid #f0f0f0;
+        border-bottom: 1rpx solid #f0f0f0;
         color: #282828;
-        font-size: 32px;
+        font-size: 32rpx;
         &.code-cell {
             padding-right: 0;
         }
         .label {
-            width: 100px;
-            padding-right: 36px;
+            width: 100rpx;
+            padding-right: 36rpx;
             text-align: right;
             color: #33374d;
-            font-size: 32px;
+            font-size: 32rpx;
         }
         .form-item {
             height: 100%;
             flex: 1;
-            font-size: 32px;
+            font-size: 32rpx;
             display: flex;
             align-items: center;
             input {
                 flex: 1;
             }
             .code {
-                width: 280px;
-                height: 100px;
+                width: 280rpx;
+                height: 100rpx;
             }
         }
     }
 }
 .promise {
     color: #999;
-    font-size: 22px;
-    line-height: 40px;
-    padding: 15px 20px 0;
-    margin-top: 15px;
+    font-size: 22rpx;
+    line-height: 40rpx;
+    padding: 10rpx 20rpx;
+    margin-top: 15rpx;
 }
 .btn-default {
-    width: 660px;
-    border-radius: 10px;
-    margin-top: 15px;
+    width: 660rpx;
+    border-radius: 10rpx;
+    margin-top: 15rpx;
 }
 </style>

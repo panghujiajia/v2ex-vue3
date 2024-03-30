@@ -28,9 +28,7 @@
                     <Topic :item="item" :visited="false"></Topic>
                 </view>
             </view>
-            <view v-if="noMore" class="no-more">
-                没有了，去看看别的或休息一下吧
-            </view>
+            <NoMore v-if="noMore"></NoMore>
         </view>
     </view>
 </template>
@@ -39,6 +37,7 @@ import { useStore } from '../store';
 import Topic from '@/components/Topic';
 import Skeleton from '@/components/Skeleton';
 import LoadFaild from '@/components/LoadFaild';
+import NoMore from '@/components/NoMore';
 import { storeToRefs } from 'pinia';
 import { reactive, ref } from 'vue';
 import { $getAllTopics } from '../service';
@@ -145,40 +144,27 @@ function loadMore() {
 </script>
 <style lang="less" scoped>
 .topic-header {
-    min-height: 200px;
+    min-height: 200rpx;
     background: url(https://cdn.todayhub.cn/lib/image/bg-topic.jpg) 50%
         no-repeat;
     background-size: cover;
-    padding: 30px;
+    padding: 30rpx;
     box-sizing: border-box;
     color: #fff;
     display: flex;
     flex-direction: column;
     font-weight: 400;
     .header-top {
-        font-size: 26px;
+        font-size: 26rpx;
         .name {
-            font-size: 38px;
-            margin-right: 20px;
+            font-size: 38rpx;
+            margin-right: 20rpx;
             font-weight: 500;
         }
     }
     .header-bottom {
-        font-size: 28px;
-        margin-top: 15px;
-    }
-}
-.list-wrap {
-    background: #f5f5f5;
-    height: 100%;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-    .item {
-        white-space: normal;
-        margin-bottom: 20px;
-        display: inline-block;
-        width: 100%;
+        font-size: 28rpx;
+        margin-top: 15rpx;
     }
 }
 </style>

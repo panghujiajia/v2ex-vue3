@@ -40,7 +40,7 @@
                     </view>
                 </view>
             </view>
-            <view v-if="noMore" class="no-more"> 没有啦～ </view>
+            <NoMore v-if="noMore"></NoMore>
         </view>
     </view>
 </template>
@@ -48,6 +48,7 @@
 import Topic from '@/components/Topic.vue';
 import MarkDown from '@/components/MarkDown.vue';
 import LoadFaild from '@/components/LoadFaild.vue';
+import NoMore from '@/components/NoMore';
 import { $getUserReplys } from '../service';
 import Skeleton from '@/components/Skeleton.vue';
 import { reactive, ref } from 'vue';
@@ -151,8 +152,8 @@ function loadMore() {
 <style lang="less" scoped>
 .list-wrap {
     .item {
-        font-size: 28px;
-        padding: 25px 30px;
+        font-size: 28rpx;
+        padding: 25rpx 30rpx;
         background: #fff;
         /deep/.user-name {
             color: #4474ff;
@@ -175,15 +176,15 @@ function loadMore() {
                 color: #999;
             }
             .reply-title {
-                margin: 10px 0 15px;
+                margin: 10rpx 0 15rpx;
                 .chevron {
-                    margin: 0 10px;
+                    margin: 0 10rpx;
                 }
             }
         }
         .reply-content {
             background: #f9f9f9;
-            padding: 10px 20px;
+            padding: 10rpx 20rpx;
         }
     }
 }

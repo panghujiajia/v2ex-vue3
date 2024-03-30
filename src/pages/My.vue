@@ -2,7 +2,6 @@
     <scroll-view
         :scroll-y="true"
         class="scroll-view"
-        scroll-with-animation
         @touchmove.prevent.stop="
             () => {
                 return false;
@@ -260,24 +259,24 @@ function navigateTo(key, auth = false) {
         position: absolute;
         top: 40%;
         left: 50%;
-        transform: translateX(-310px);
+        transform: translateX(-310rpx);
         z-index: 99999;
         background: rgba(0, 0, 0, 0.7);
-        border-radius: 20px;
-        padding: 20px;
+        border-radius: 20rpx;
+        padding: 20rpx;
         color: #fff;
-        font-size: 28px;
-        width: 620px;
+        font-size: 28rpx;
+        width: 620rpx;
         box-sizing: border-box;
     }
     .top-wrap {
-        height: 600px;
+        height: 600rpx;
         background: url(https://cdn.todayhub.cn/lib/image/bg-user-center.png)
             50% no-repeat;
         background-size: 100%;
         .header {
-            height: 400px;
-            width: 690px;
+            height: 400rpx;
+            padding: 0 30rpx;
             margin: 0 auto;
             display: flex;
             justify-content: space-between;
@@ -286,68 +285,68 @@ function navigateTo(key, auth = false) {
                 display: flex;
             }
             .avatar {
-                width: 180px;
-                height: 180px;
+                width: 180rpx;
+                height: 180rpx;
                 border-radius: 50%;
                 overflow: hidden;
-                margin-right: 30px;
+                margin-right: 30rpx;
                 image {
-                    width: 180px;
-                    height: 180px;
+                    width: 180rpx;
+                    height: 180rpx;
                 }
             }
             .info {
-                width: 330px;
+                width: 330rpx;
                 flex: 1;
                 display: flex;
                 flex-direction: column;
                 justify-content: center;
                 .nick-name {
-                    font-size: 40px;
+                    font-size: 40rpx;
                     font-family: PingFangSC-Medium, PingFang SC;
                     font-weight: 500;
                     color: #ffffff;
-                    line-height: 56px;
+                    line-height: 56rpx;
                 }
                 .rank {
-                    font-size: 24px;
+                    font-size: 24rpx;
                     font-family: PingFangSC-Regular, PingFang SC;
                     font-weight: 400;
                     color: #ffffff;
-                    line-height: 33px;
-                    margin: 10px 0;
+                    line-height: 33rpx;
+                    margin: 10rpx 0;
                 }
                 .money {
-                    height: 40px;
+                    height: 40rpx;
                     display: flex;
                     align-items: center;
-                    margin-top: 30px;
+                    margin-top: 30rpx;
                     color: #fff;
-                    font-size: 24px;
+                    font-size: 24rpx;
                     font-family: PingFangSC-Regular, PingFang SC;
                     font-weight: 400;
                     view {
                         display: flex;
                         align-items: center;
-                        margin-right: 15px;
+                        margin-right: 15rpx;
                     }
                     image {
-                        width: 34px;
-                        height: 34px;
-                        margin-right: 5px;
+                        width: 34rpx;
+                        height: 34rpx;
+                        margin-right: 5rpx;
                     }
                 }
             }
             .btn-sign {
-                width: 143px;
-                height: 51px;
+                width: 143rpx;
+                height: 51rpx;
                 background: #ffc413;
-                border-radius: 26px;
-                font-size: 28px;
+                border-radius: 26rpx;
+                font-size: 28rpx;
                 font-family: PingFangSC-Regular, PingFang SC;
                 font-weight: 400;
                 color: #ffffff;
-                line-height: 51px;
+                line-height: 51rpx;
                 text-align: center;
                 &.disabled {
                     background: #c3c3c3;
@@ -360,31 +359,30 @@ function navigateTo(key, auth = false) {
     display: flex;
     align-items: center;
     .dot {
-        border-radius: 20px;
-        padding: 0 16px;
+        border-radius: 20rpx;
+        padding: 0 16rpx;
         background: #fa5151;
         color: #fff;
-        font-size: 22px;
+        font-size: 22rpx;
         font-weight: bold;
     }
 }
 .cell-group {
     background: #fff;
-    width: 690px;
-    margin: 0 auto;
-    margin-top: -250px;
-    border-radius: 16px 16px 0 0;
+    margin: 0 30rpx;
+    margin-top: -250rpx;
+    border-radius: 16rpx 16rpx 0 0;
     position: relative;
     box-sizing: border-box;
     z-index: 2;
     .tip {
         color: #999;
-        font-size: 22px;
+        font-size: 22rpx;
     }
     .icon-arrow {
         position: relative;
-        width: 20px;
-        height: 20px;
+        width: 20rpx;
+        height: 20rpx;
         &:after,
         &:before {
             content: '';
@@ -392,14 +390,14 @@ function navigateTo(key, auth = false) {
             position: absolute;
             top: 0;
             right: 0;
-            width: 2px;
-            height: 12px;
-            border-radius: 2px;
+            width: 2rpx;
+            height: 12rpx;
+            border-radius: 2rpx;
             background: #ccc;
             transform: rotateZ(-45deg);
         }
         &:after {
-            top: 8px;
+            top: 8rpx;
             transform: rotateZ(45deg);
         }
     }
@@ -407,17 +405,17 @@ function navigateTo(key, auth = false) {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        height: 100px;
-        padding: 0 30px 0 40px;
+        height: 100rpx;
+        padding: 0 30rpx 0 40rpx;
         box-sizing: border-box;
-        border-bottom: 1px solid #f0f0f0;
+        border-bottom: 1rpx solid #f0f0f0;
         color: #282828;
-        font-size: 32px;
+        font-size: 32rpx;
         /deep/.uni-switch-input {
             transform: scale(0.7);
-            margin-right: -10px;
+            margin-right: -10rpx;
             &:after {
-                box-shadow: 0 0 4px rgb(0 0 0 / 40%);
+                box-shadow: 0 0 4rpx rgb(0 0 0 / 40%);
                 height: 100%;
             }
             &:before {
@@ -428,9 +426,9 @@ function navigateTo(key, auth = false) {
             opacity: 1;
         }
         text {
-            font-size: 24px;
+            font-size: 24rpx;
             color: #999;
-            line-height: 100px;
+            line-height: 100rpx;
         }
         &:last-child {
             border-bottom: 0 none;
