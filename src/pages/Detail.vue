@@ -1,23 +1,20 @@
 <template>
     <view class="container">
-        <Skeleton
-            v-if="loading && loadType === 'refresh'"
-            type="detail"
-        ></Skeleton>
+        <Skeleton v-if="loading || fetching" type="detail"></Skeleton>
         <LoadFaild
-            v-else-if="!topicDetail.title"
+            v-else-if="!detail.title"
             :status="true"
-            @reload="loadData()"
+            @reload="reload()"
         ></LoadFaild>
         <template v-else>
             <view class="topic-wrap">
-                <AuthorInfo :item="topicDetail"></AuthorInfo>
-                <view class="title">{{ topicDetail.title }}</view>
-                <MarkDown :content="topicDetail.content"></MarkDown>
+                <AuthorInfo :item="detail"></AuthorInfo>
+                <view class="title">{{ detail.title }}</view>
+                <MarkDown :content="detail.content"></MarkDown>
             </view>
-            <view v-if="topicDetail.subtle_list.length" class="subtle-wrap">
+            <view v-if="detail.subtle_list.length" class="subtle-wrap">
                 <template
-                    v-for="(item, index) in topicDetail.subtle_list"
+                    v-for="(item, index) in detail.subtle_list"
                     :key="index"
                 >
                     <view class="title">
@@ -29,173 +26,189 @@
                 </template>
             </view>
             <view class="tag-info">
-                <TopicTag :item="topicDetail"></TopicTag>
-                <view class="floor-wrap">
-                    <image
-                        class="reply-icon"
-                        src="https://cdn.todayhub.cn/lib/image/reply_neue.png"
-                        @click="replyTopic()"
-                    ></image>
-                    <view class="floor">OP</view>
+                <TopicTag :item="detail"></TopicTag>
+            </view>
+            <view class="divider"></view>
+            <view class="reply-option">
+                <view v-if="total" class="reply-num"> {{ total }}条回复</view>
+                <view class="tabs">
+                    <text
+                        v-for="(item, index) in items"
+                        :class="{ cur: index === current }"
+                        @click="current = index"
+                    >
+                        {{ item }}
+                    </text>
                 </view>
             </view>
-            <view v-if="topicDetail.reply_num" class="reply-num">
-                {{ topicDetail.reply_num }}条回复
-            </view>
             <view
-                v-for="(item, index) in topicDetail.reply_list"
-                :key="index"
+                v-for="item in data"
+                :key="item.index"
                 :class="item.author"
-                class="topic-wrap topic-reply"
+                class="reply-wrap"
             >
                 <view class="user-info">
                     <AuthorInfo :item="item"></AuthorInfo>
-                    <view class="floor-wrap">
-                        <image
-                            class="reply-icon"
-                            src="https://cdn.todayhub.cn/lib/image/reply_neue.png"
-                            @click="replyTopic(item)"
-                        ></image>
-                        <view class="floor">
-                            {{ `${index + 1}楼` }}
-                        </view>
+                    <view class="floor">
+                        {{ `${item.index}楼` }}
                     </view>
                 </view>
-                <MarkDown :content="item.content"></MarkDown>
+                <MarkDown
+                    v-if="item.quote"
+                    class="quote"
+                    :content="item.quote"
+                ></MarkDown>
+                <MarkDown class="md" :content="item.content"></MarkDown>
             </view>
-            <ReplyBox
-                ref="replyBoxRef"
-                :replyWho="replyWho"
-                :topic="topicDetail"
-                @replySuccess="refresh()"
-            ></ReplyBox>
             <!-- #ifdef MP-WEIXIN -->
             <ad unit-id="adunit-6996f541fca34984"></ad>
             <!-- #endif -->
-            <NoMore v-if="noMore"></NoMore>
+            <NoMore v-if="isLastPage"></NoMore>
         </template>
     </view>
 </template>
 <script setup>
-import { reactive, ref } from 'vue';
-import { $getTopicDetail } from '../service';
-import AuthorInfo from '@/components/AuthorInfo';
-import TopicTag from '@/components/TopicTag';
-import Skeleton from '@/components/Skeleton';
-import MarkDown from '@/components/MarkDown';
-import LoadFaild from '@/components/LoadFaild';
-import ReplyBox from '@/components/ReplyBox.vue';
-import NoMore from '@/components/NoMore';
-import { onPullDownRefresh, onReachBottom, onLoad } from '@dcloudio/uni-app';
-import { useStore } from '../store';
+import { ref, toRaw, watch } from 'vue';
+import { $getTopicDetail } from '@/service';
+import { onPullDownRefresh } from '@dcloudio/uni-app';
+import { useIndexStore } from '@/stores';
+import { usePagination } from '@alova/scene-vue';
+import LoadFaild from '@/components/LoadFailed.vue';
+import Skeleton from '@/components/Skeleton.vue';
+import AuthorInfo from '@/components/AuthorInfo.vue';
+import MarkDown from '@/components/MarkDown.vue';
+import TopicTag from '@/components/TopicTag.vue';
+import NoMore from '@/components/NoMore.vue';
 
-const store = useStore();
-let loading = ref(true);
-let replyWho = ref(null);
-let replyBoxRef = ref(null);
-let params = reactive({
+const props = defineProps(['id']);
+const store = useIndexStore();
+
+const items = ['正序', '倒序', 'OP'];
+const current = ref(0);
+
+const reverseData = ref([]);
+const positiveData = ref([]);
+const opData = ref([]);
+
+const detail = ref({
     id: '',
-    p: 1
-});
-let totalPage = ref(1);
-let loadType = ref('refresh');
-let noMore = ref(false);
-let topicDetail = ref({
-    reply_list: [],
+    once: '',
+    avatar: '',
+    title: '',
+    content: '',
+    author: '',
+    publish_time: '',
+    tag_name: '',
+    tag_link: '',
     subtle_list: []
 });
-const props = defineProps(['id']);
-onLoad(() => {
-    params.id = props.id;
-    loadData();
+
+watch(current, (value, oldValue) => {
+    console.log(toRaw(positiveData.value));
+    switch (value) {
+        case 0:
+            data.value = positiveData.value;
+            break;
+        case 1:
+            data.value = reverseData.value;
+            break;
+        case 2:
+            data.value = opData.value;
+            break;
+    }
 });
-async function loadData() {
-    loading.value = true;
-    const replyList = topicDetail.value.reply_list || [];
-    const res = await $getTopicDetail(params);
-    if (res) {
-        let { reply_list, page, once } = res;
-        if (params.p === 1) {
-            topicDetail.value = res;
-            uni.setNavigationBarTitle({ title: topicDetail.value.title });
-            totalPage.value = page || 1;
-            store.saveHistoryTopics(res);
-        }
-        topicDetail.value.once = once;
-        reply_list = reply_list.map(item => {
-            return {
-                ...item,
-                content: item.content.replace(
-                    /(@.*?>)(.*?)(<\/a>)/g,
-                    '<text class="user-name">$1$2$3</text>'
-                )
-            };
-        });
-        if (loadType.value === 'refresh') {
-            topicDetail.value.reply_list = reply_list;
-            uni.stopPullDownRefresh();
-        } else {
-            if (!noMore.value) {
-                topicDetail.value.reply_list = [...replyList, ...reply_list];
-            }
-        }
-        if (params.p >= totalPage.value) {
-            noMore.value = true;
+
+const {
+    data,
+    loading,
+    fetching,
+    send,
+    reload,
+    total,
+    page,
+    isLastPage,
+    onSuccess
+} = usePagination(
+    (page, pageSize) => $getTopicDetail({ id: props.id, p: page }),
+    {
+        append: true,
+        initialPageSize: 100,
+        data: response => {
+            let list = response.list;
+            list = list.map(item => {
+                return {
+                    ...item,
+                    content: item.content.replace(
+                        /(@.*?>)(.*?)(<\/a>)/g,
+                        '<text class="user-name">$1$2$3</text>'
+                    )
+                };
+            });
+            return list;
         }
     }
-    loading.value = false;
-}
-function replyTopic(item) {
-    if (!store.cookie) {
-        uni.showModal({
-            title: '提示',
-            content: '登录后才能回帖',
-            confirmText: '去登录',
-            cancelText: '取消',
-            success: ({ confirm }) => {
-                if (confirm) {
-                    uni.navigateTo({ url: '/pages/Login' });
+);
+
+onSuccess(({ data: res }) => {
+    detail.value = res.detail;
+    uni.setNavigationBarTitle({ title: res.detail.title });
+    store.saveHistoryTopics(res.detail);
+    if (!isLastPage.value) {
+        page.value++;
+    } else {
+        uni.stopPullDownRefresh();
+        data.value = data.value.map((item, index) => {
+            item.quote = '';
+            const frontData = JSON.parse(JSON.stringify(toRaw(data.value)))
+                .splice(0, index)
+                .reverse();
+            if (frontData.length >= 1) {
+                let excludeAuthor = [];
+                for (let i = 0; i < frontData.length; i++) {
+                    let frontItem = frontData[i];
+                    if (
+                        item.content.includes(frontItem.author) &&
+                        !excludeAuthor.includes(frontItem.author)
+                    ) {
+                        item.quote += `<view>${frontItem.content}</view><view style="display: block;height: 20rpx"></view>`;
+                        excludeAuthor.push(frontItem.author);
+                    }
                 }
             }
+            return { ...item, index: index + 1 };
         });
-        return;
+        positiveData.value = data.value;
+        reverseData.value = JSON.parse(
+            JSON.stringify(toRaw(data.value))
+        ).reverse();
+        opData.value = JSON.parse(JSON.stringify(toRaw(data.value))).filter(
+            item => item.is_master
+        );
     }
-    replyWho.value = item;
-    replyBoxRef.value.showReply();
-}
-onPullDownRefresh(refresh);
-function refresh() {
-    params.p = 1;
-    loadType.value = 'refresh';
-    noMore.value = false;
-    loadData();
-}
-onReachBottom(loadMore);
-function loadMore() {
-    if (noMore.value) {
-        return;
-    }
-    params.p = ++params.p;
-    loadType.value = 'loadMore';
-    loadData();
-}
+});
+
+onPullDownRefresh(reload);
 </script>
 <style lang="less" scoped>
 text {
     user-select: text;
 }
+
 .subtle-wrap {
-    background: #fffff9;
+    background: #f9f9f9;
     color: #666;
     padding: 25rpx 30rpx;
+
     .title {
         font-size: 26rpx;
         margin-bottom: 10rpx;
     }
+
     .content {
         margin-bottom: 30rpx;
         padding-bottom: 30rpx;
         border-bottom: 2rpx solid #f5f5f5;
+
         &:last-child {
             border-bottom: 0;
             margin-bottom: 0;
@@ -203,14 +216,11 @@ text {
         }
     }
 }
+
 .topic-wrap {
     padding: 25rpx 30rpx;
     background: #fff;
-    .user-info {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
+
     .title {
         font-size: 32rpx;
         color: #333;
@@ -219,6 +229,7 @@ text {
         margin: 20rpx 0;
     }
 }
+
 .tag-info {
     display: flex;
     justify-content: space-between;
@@ -226,34 +237,84 @@ text {
     padding: 25rpx 30rpx;
     background: #fff;
 }
-.floor-wrap {
-    display: flex;
-    align-items: center;
-    .reply-icon {
-        width: 30rpx;
-        height: 30rpx;
-        margin-right: 15rpx;
-    }
-    .floor {
-        color: #999;
-        font-size: 22rpx;
-    }
-}
-.reply-num {
-    height: 50rpx;
-    line-height: 50rpx;
-    padding: 0 30rpx;
+
+.divider {
+    height: 20rpx;
     background: #f5f5f5;
+}
+
+.reply-option {
+    display: flex;
+    justify-content: space-between;
+}
+
+.floor {
     color: #999;
     font-size: 22rpx;
-    font-weight: 400;
 }
-.topic-reply {
-    padding-bottom: 20rpx;
-    border-bottom: 20rpx solid #f5f5f5;
-    /deep/rich-text {
-        font-weight: 500;
+
+.reply-option {
+    height: 80rpx;
+    line-height: 80rpx;
+    padding: 0 30rpx;
+    border-bottom: 1px solid #f5f5f5;
+    display: flex;
+    align-items: center;
+
+    .reply-num {
+        color: #666;
+        font-size: 24rpx;
+        font-weight: 400;
     }
+
+    .tabs {
+        display: flex;
+        align-items: center;
+        background: #f9f9f9;
+        height: 40rpx;
+        width: 240rpx;
+        border: 2px solid #f9f9f9;
+
+        text {
+            flex: 1;
+            font-size: 22rpx;
+            height: 38rpx;
+            color: #666;
+            line-height: 38rpx;
+            text-align: center;
+        }
+
+        .cur {
+            background: #fff;
+            font-weight: bold;
+        }
+    }
+}
+
+.reply-wrap {
+    padding: 25rpx 0 0 30rpx;
+
+    .user-info {
+        display: flex;
+        justify-content: space-between;
+        padding-right: 30rpx;
+    }
+
+    .md,
+    .quote {
+        margin-left: 80rpx;
+        border-bottom: 1px solid #f5f5f5;
+        padding-bottom: 25rpx;
+        padding-right: 30rpx;
+    }
+
+    .quote {
+        background: #f9f9f9;
+        padding: 20rpx 20rpx 0;
+        margin-right: 30rpx;
+        margin-bottom: 20rpx;
+    }
+
     .user-info {
         margin-bottom: 10rpx;
     }

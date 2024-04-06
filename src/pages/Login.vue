@@ -56,12 +56,12 @@
     </view>
 </template>
 <script setup>
-import { useStore } from '../store';
 import { storeToRefs } from 'pinia';
-import { reactive, ref } from 'vue';
+import { ref } from 'vue';
 import { onShow } from '@dcloudio/uni-app';
 import { $getLoginParams, $login } from '../service';
-const store = useStore();
+
+const store = useIndexStore();
 
 let { cookie, userInfo } = storeToRefs(store);
 

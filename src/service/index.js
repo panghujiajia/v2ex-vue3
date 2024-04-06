@@ -1,239 +1,124 @@
 import { $http } from './interceptor';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
-import { useStore } from '../store';
+import { useIndexStore } from '@/stores';
+import { useSetMeta } from '@/hooks';
 
 dayjs.extend(relativeTime);
 
-export const $getTabTopics = async tab => {
-    try {
-        const res = await $http.get(`/topics/tab/${tab}`);
-        return res.data.data;
-    } catch (error) {
-        return false;
-    }
+export const $getTabTopics = tab => {
+    return useSetMeta($http.Get(`/topics/tab/${tab}`));
 };
 
-export const $getAllTopics = async params => {
-    try {
-        const store = useStore();
-        const res = await $http.get(`/topics/all/${params.tab}/${params.p}`, {
-            custom: {
-                auth: !!store.cookie
-            }
-        });
-        return res.data.data;
-    } catch (error) {
-        return false;
-    }
+export const $getAllTopics = params => {
+    const store = useIndexStore();
+    return useSetMeta($http.Get(`/topics/all/${params.tab}/${params.p}`), {
+        ignoreToken: !store.cookie
+    });
 };
 
-export const $getTopicDetail = async params => {
-    try {
-        const store = useStore();
-        const res = await $http.get(`/topics/detail/${params.id}/${params.p}`, {
-            custom: {
-                auth: !!store.cookie
-            }
-        });
-        return res.data.data;
-    } catch (error) {
-        return false;
-    }
+export const $getTopicDetail = ({ id, p }) => {
+    const store = useIndexStore();
+    const suffix = p ? `${id}/${p}` : id;
+    return useSetMeta($http.Get(`/topics/detail/${suffix}`), {
+        ignoreToken: !store.cookie,
+        loading: false
+    });
 };
 
-export const $getLoginParams = async () => {
-    try {
-        const res = await $http.get('/login/params', {
-            custom: {
-                loading: false
-            }
-        });
-        return res.data.data;
-    } catch (error) {
-        return false;
-    }
+export const $getLoginParams = () => {
+    return useSetMeta($http.Get(`/login/params`), {
+        loading: false
+    });
 };
 
-export const $login = async params => {
-    try {
-        const res = await $http.post('/login', params);
-        return res.data.data;
-    } catch (error) {
-        return false;
-    }
+export const $login = params => {
+    return useSetMeta($http.Post(`/login`, params));
 };
 
-export const $getTopTagConfig = async () => {
-    try {
-        const res = await $http.get('/config/tag/top', {
-            custom: {
-                loading: false
-            }
-        });
-        return res.data.data;
-    } catch (error) {
-        return false;
-    }
+export const $getTopTagConfig = () => {
+    return useSetMeta($http.Get(`/config/tag/top`), {
+        loading: false
+    });
 };
 
-export const $getV2exConfig = async () => {
-    try {
-        const res = await $http.get('/config/v2ex', {
-            custom: {
-                loading: false
-            }
-        });
-        return res.data.data;
-    } catch (error) {
-        return false;
-    }
+export const $getV2exConfig = () => {
+    return useSetMeta($http.Get(`/config/v2ex`), {
+        loading: false
+    });
 };
 
-export const $getAllTagConfig = async () => {
-    try {
-        const store = useStore();
-        const res = await $http.get('/config/tag/all', {
-            custom: {
-                auth: !!store.cookie,
-                loading: false
-            }
-        });
-        return res.data.data;
-    } catch (error) {
-        return false;
-    }
+export const $getAllTagConfig = () => {
+    const store = useIndexStore();
+    return useSetMeta($http.Get(`/config/v2ex`), {
+        ignoreToken: !store.cookie,
+        loading: false
+    });
 };
 
-export const $getUserInfo = async username => {
-    try {
-        const res = await $http.get(`/member/${username}`, {
-            custom: {
-                auth: true,
-                loading: false
-            }
-        });
-        return res.data.data;
-    } catch (error) {
-        return false;
-    }
+export const $getUserInfo = username => {
+    return useSetMeta($http.Get(`/member/${username}`), {
+        ignoreToken: false,
+        loading: false
+    });
 };
 
-export const $getUserTopics = async params => {
-    try {
-        const store = useStore();
-        const res = await $http.get(
-            `/member/${params.username}/topics/${params.p}`,
-            {
-                custom: {
-                    auth: !!store.cookie
-                }
-            }
-        );
-        return res.data.data;
-    } catch (error) {
-        return false;
-    }
+export const $getUserTopics = params => {
+    const store = useIndexStore();
+    return useSetMeta(
+        $http.Get(`/member/${params.username}/topics/${params.p}`),
+        {
+            ignoreToken: !store.cookie,
+            loading: false
+        }
+    );
 };
 
-export const $getUserReplys = async params => {
-    try {
-        const store = useStore();
-        const res = await $http.get(
-            `/member/${params.username}/replies/${params.p}`,
-            {
-                custom: {
-                    auth: !!store.cookie
-                }
-            }
-        );
-        return res.data.data;
-    } catch (error) {
-        return false;
-    }
+export const $getUserReplys = params => {
+    const store = useIndexStore();
+    return useSetMeta(
+        $http.Get(`/member/${params.username}/replies/${params.p}`),
+        {
+            ignoreToken: !store.cookie
+        }
+    );
 };
 
-export const $getUserMessage = async p => {
-    try {
-        const res = await $http.get(`/message/${p}`, {
-            custom: {
-                auth: true
-            }
-        });
-        return res.data.data;
-    } catch (error) {
-        return false;
-    }
+export const $getUserMessage = p => {
+    return useSetMeta($http.Get(`/message/${p}`), {
+        ignoreToken: false
+    });
 };
 
-export const $getLoginRewardInfo = async () => {
-    try {
-        const res = await $http.get('/mission/daily', {
-            custom: {
-                auth: true,
-                loading: false
-            }
-        });
-        return res.data.data;
-    } catch (error) {
-        return false;
-    }
+export const $getLoginRewardInfo = () => {
+    return useSetMeta($http.Get(`/mission/daily`), {
+        ignoreToken: false,
+        loading: false
+    });
 };
 
-export const $getLoginReward = async () => {
-    try {
-        const res = await $http.post(
-            '/mission/daily',
-            {},
-            {
-                custom: {
-                    auth: true
-                }
-            }
-        );
-        return res.data.data;
-    } catch (error) {
-        return false;
-    }
+export const $getLoginReward = () => {
+    return useSetMeta($http.Post('/mission/daily', {}), {
+        ignoreToken: false
+    });
 };
 
-export const $getUserBalance = async () => {
-    try {
-        const res = await $http.get('/balance', {
-            custom: {
-                auth: true,
-                loading: false
-            }
-        });
-        return res.data.data;
-    } catch (error) {
-        return false;
-    }
+export const $getUserBalance = () => {
+    return useSetMeta($http.Get(`/balance`), {
+        ignoreToken: false,
+        loading: false
+    });
 };
 
-export const $getUserNotifications = async () => {
-    try {
-        const res = await $http.get('/notifications', {
-            custom: {
-                auth: true,
-                loading: false
-            }
-        });
-        return res.data.data;
-    } catch (error) {
-        return false;
-    }
+export const $getUserNotifications = () => {
+    return useSetMeta($http.Get(`/notifications`), {
+        ignoreToken: false,
+        loading: false
+    });
 };
 
-export const $replyTopic = async params => {
-    try {
-        const res = await $http.post('/t', params, {
-            custom: {
-                auth: true
-            }
-        });
-        return res.data.data;
-    } catch (error) {
-        return false;
-    }
+export const $replyTopic = params => {
+    return useSetMeta($http.Post(`/t`), {
+        ignoreToken: false
+    });
 };

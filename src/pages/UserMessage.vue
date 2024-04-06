@@ -87,10 +87,9 @@
 <script setup>
 import { $getUserMessage } from '../service';
 import MarkDown from '@/components/MarkDown.vue';
-import LoadFaild from '@/components/LoadFaild.vue';
+import LoadFaild from '@/components/LoadFailed.vue';
 import { reactive, ref } from 'vue';
-import { onPullDownRefresh, onReachBottom, onLoad } from '@dcloudio/uni-app';
-import { useStore } from '../store';
+import { onLoad, onPullDownRefresh, onReachBottom } from '@dcloudio/uni-app';
 
 let loading = ref(true);
 let noMore = ref(false);
@@ -105,7 +104,7 @@ let nodeInfo = ref({
     message_count: 0
 });
 
-const store = useStore();
+const store = useIndexStore();
 onLoad(() => {
     store.saveNotifications(0);
     getList();

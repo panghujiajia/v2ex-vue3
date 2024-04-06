@@ -25,12 +25,12 @@
 </template>
 <script setup>
 import Topic from '@/components/Topic.vue';
-import LoadFaild from '@/components/LoadFaild';
+import LoadFaild from '@/components/LoadFailed.vue';
 import NoMore from '@/components/NoMore';
-import { useStore } from '../store';
+import { useIndexStore } from '../stores';
 import { storeToRefs } from 'pinia';
 
-const store = useStore();
+const store = useIndexStore();
 let { historyTopic } = storeToRefs(store);
 function getTopicsDetail(id) {
     uni.navigateTo({

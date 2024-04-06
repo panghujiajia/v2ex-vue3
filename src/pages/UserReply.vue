@@ -47,7 +47,7 @@
 <script setup>
 import Topic from '@/components/Topic.vue';
 import MarkDown from '@/components/MarkDown.vue';
-import LoadFaild from '@/components/LoadFaild.vue';
+import LoadFaild from '@/components/LoadFailed.vue';
 import NoMore from '@/components/NoMore';
 import { $getUserReplys } from '../service';
 import Skeleton from '@/components/Skeleton.vue';

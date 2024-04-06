@@ -22,9 +22,11 @@ const { item } = toRefs(props);
 .visited {
     opacity: 0.5;
 }
+
 .topic-wrap {
     background: #fff;
     padding: 25rpx 30rpx;
+
     .title {
         font-size: 32rpx;
         font-family: PingFangSC-Medium, PingFang SC;
@@ -33,12 +35,14 @@ const { item } = toRefs(props);
         line-height: 45rpx;
         margin-top: 5rpx;
     }
+
     .topic-info {
         display: flex;
         align-items: center;
         justify-content: space-between;
         height: 50rpx;
         margin-top: 10rpx;
+
         .reply {
             font-size: 22rpx;
             font-family: PingFangSC-Regular, PingFang SC;

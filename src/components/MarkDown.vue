@@ -10,11 +10,13 @@
 </template>
 <script setup>
 import mpHtml from 'mp-html/dist/uni-app/components/mp-html/mp-html';
-import { useStore } from '../store';
+import { useIndexStore } from '../stores';
 import { storeToRefs } from 'pinia';
+
 const props = defineProps(['content']);
-const store = useStore();
+const store = useIndexStore();
 let { autoNavigate } = storeToRefs(store);
+
 function linkClick(e) {
     const { href, innerText } = e;
     const hrefArr = href.split('/');
@@ -76,13 +78,14 @@ function linkClick(e) {
 }
 </script>
 <style lang="less" scoped>
-/deep/.user-name {
-    color: #4474ff;
+/deep/ .user-name {
+    color: #999;
+
     view,
     text {
-        color: #4474ff;
-        font-weight: bold;
+        color: #999;
     }
+
     ._hover {
         text-decoration: none;
     }

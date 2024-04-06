@@ -33,17 +33,16 @@
     </view>
 </template>
 <script setup>
-import { useStore } from '../store';
 import Topic from '@/components/Topic';
 import Skeleton from '@/components/Skeleton';
-import LoadFaild from '@/components/LoadFaild';
+import LoadFaild from '@/components/LoadFailed.vue';
 import NoMore from '@/components/NoMore';
 import { storeToRefs } from 'pinia';
 import { reactive, ref } from 'vue';
 import { $getAllTopics } from '../service';
-import { onPullDownRefresh, onReachBottom, onLoad } from '@dcloudio/uni-app';
+import { onLoad, onPullDownRefresh, onReachBottom } from '@dcloudio/uni-app';
 
-const store = useStore();
+const store = useIndexStore();
 let { visited } = storeToRefs(store);
 let list = ref([]);
 let nodeInfo = ref({

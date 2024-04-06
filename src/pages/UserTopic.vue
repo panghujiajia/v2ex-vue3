@@ -23,7 +23,7 @@
 import Topic from '@/components/Topic.vue';
 import { $getUserTopics } from '../service';
 import Skeleton from '@/components/Skeleton.vue';
-import LoadFaild from '@/components/LoadFaild.vue';
+import LoadFaild from '@/components/LoadFailed.vue';
 import NoMore from '@/components/NoMore';
 import { reactive, ref } from 'vue';
 import { onPullDownRefresh, onReachBottom, onLoad } from '@dcloudio/uni-app';

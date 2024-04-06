@@ -9,9 +9,9 @@ import {
     $getUserInfo,
     $getUserNotifications,
     $getV2exConfig
-} from '../service';
+} from '@/service';
 
-export const useStore = defineStore(
+export const useIndexStore = defineStore(
     'v2ex',
     () => {
         const tabs = reactive(topTags);

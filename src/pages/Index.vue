@@ -29,13 +29,13 @@
                     v-if="loading || currentTagIndex !== tagIndex"
                 ></Skeleton>
                 <LoadFaild
-                    v-else-if="!list.length"
+                    v-else-if="!data.length"
                     :status="true"
-                    @reload="getData()"
+                    @reload="send()"
                 ></LoadFaild>
                 <scroll-view v-else :scroll-y="scrollY" class="list-wrap">
                     <view
-                        v-for="(item, index) in list"
+                        v-for="(item, index) in data"
                         :key="index"
                         class="item"
                         @click="getTopicsDetail(item.id)"
@@ -53,26 +53,22 @@
 import Topic from '@/components/Topic';
 import Skeleton from '@/components/Skeleton';
 import NavBar from '@/components/NavBar';
-import LoadFaild from '@/components/LoadFaild';
+import LoadFaild from '@/components/LoadFailed.vue';
 import NoMore from '@/components/NoMore';
 import { ref } from 'vue';
-import { useStore } from '../store';
-import { $getTabTopics } from '../service';
-import dayjs from 'dayjs';
+import { $getTabTopics } from '@/service';
 import { storeToRefs } from 'pinia';
 import { onShow } from '@dcloudio/uni-app';
+import { useIndexStore } from '@/stores';
+import { useWatcher } from 'alova';
 
-const store = useStore();
+const store = useIndexStore();
 let { cookie, tabs, currentTagIndex, currentTagName, visited, storageTime } =
     storeToRefs(store);
 
 let scrollY = ref(true);
 
-let loading = ref(true);
-
 let list = ref([]);
-
-getData();
 
 onShow(() => {
     if (cookie.value) {
@@ -87,7 +83,7 @@ onShow(() => {
 function getTopicsDetail(id) {
     if (!visited.value.includes(id)) {
         store.updateVisited(id);
-        const target = list.value.find(item => {
+        const target = data.value.find(item => {
             return item.id === id;
         });
         target.visited = true;
@@ -97,58 +93,26 @@ function getTopicsDetail(id) {
     });
 }
 
-async function getList(title) {
-    const data = await $getTabTopics(title);
-    if (data) {
-        const newData = data.map(item => {
-            let isVisited = false;
-            if (visited.value.includes(item.id)) {
-                isVisited = true;
-            }
-            return { ...item, visited: isVisited };
-        });
-        list.value = newData;
-        store.updateTopicData({ key: `${title}_data`, data: newData });
-        store.updateTopicData({ key: `${title}_time`, data: dayjs() });
-        uni.pageScrollTo({
-            scrollTop: 0
-        });
+const { data, loading, send, onSuccess } = useWatcher(
+    () => $getTabTopics(currentTagName.value),
+    [currentTagName],
+    {
+        immediate: []
     }
-    loading.value = false;
-}
+);
 
-function getData() {
-    loading.value = true;
-    let title = currentTagName.value;
-    // 如果没拿到数据就调接口
-    if (isExpired(title)) {
-        getList(title);
-    }
-}
-
-function isExpired(title) {
-    const time = store.getTopicData(`${title}_time`);
-    if (!time) {
-        return true;
-    }
-    const old = dayjs(time);
-    const now = dayjs();
-    // 缓存时间超过设定的时间,则重新请求数据
-    if (now.diff(old, 'minute') >= storageTime.value) {
-        return true;
-    }
-    return getStorageData(title);
-}
-
-function getStorageData(title) {
-    const data = store.getTopicData(`${title}_data`);
-    if (data && data.length) {
-        list.value = data;
-        loading.value = false;
-        return false;
-    }
-    return true;
-}
+onSuccess(({ data }) => {
+    data.value = data.map(item => {
+        let isVisited = false;
+        if (visited.value.includes(item.id)) {
+            isVisited = true;
+        }
+        return { ...item, visited: isVisited };
+    });
+    uni.pageScrollTo({
+        scrollTop: 0
+    });
+});
 
 function onTagChange(index) {
     store.changeTagIndex(index);
@@ -157,7 +121,6 @@ function onTagChange(index) {
 const onChange = e => {
     const { current } = e.detail;
     onTagChange(current);
-    getData();
 };
 
 const onTransition = e => {
@@ -172,6 +135,7 @@ const animationFinish = e => {
 .index-container {
     height: 100%;
 }
+
 .weui-tabs-swiper {
     overflow: hidden;
     width: 100%;
@@ -182,6 +146,7 @@ const animationFinish = e => {
     /* #ifdef APP-PLUS */
     height: calc(100vh - 80rpx);
     /* #endif */
+
     .weui-tabs-swiper-item {
         height: 100%;
         width: 100%;

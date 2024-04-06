@@ -59,11 +59,12 @@
 </template>
 
 <script setup>
-import { useStore } from '../store';
+import { useIndexStore } from '../stores';
 import { ref } from 'vue';
 import { storeToRefs } from 'pinia/dist/pinia';
 import { onHide } from '@dcloudio/uni-app';
-const store = useStore();
+
+const store = useIndexStore();
 let { allTag, myTag } = storeToRefs(store);
 
 let isEdit = ref(false);
