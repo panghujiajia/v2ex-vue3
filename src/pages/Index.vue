@@ -20,7 +20,7 @@
             "
         >
             <swiper-item
-                v-for="(item, tagIndex) in tabs"
+                v-for="(tab, tagIndex) in tabs"
                 :key="tagIndex"
                 :data-index="tagIndex"
                 class="weui-tabs-swiper-item"
@@ -28,15 +28,15 @@
                 <Skeleton
                     v-if="loading || currentTagIndex !== tagIndex"
                 ></Skeleton>
-                <LoadFaild
+                <LoadFailed
                     v-else-if="!data.length"
                     :status="true"
                     @reload="send()"
-                ></LoadFaild>
+                ></LoadFailed>
                 <scroll-view v-else :scroll-y="scrollY" class="list-wrap">
                     <view
-                        v-for="(item, index) in data"
-                        :key="index"
+                        v-for="item in data"
+                        :key="item.id"
                         class="item"
                         @click="getTopicsDetail(item.id)"
                     >
@@ -53,14 +53,14 @@
 import Topic from '@/components/Topic';
 import Skeleton from '@/components/Skeleton';
 import NavBar from '@/components/NavBar';
-import LoadFaild from '@/components/LoadFailed.vue';
+import LoadFailed from '@/components/LoadFailed.vue';
 import NoMore from '@/components/NoMore';
-import { ref } from 'vue';
+import { ref, toRaw } from 'vue';
 import { $getTabTopics } from '@/service';
 import { storeToRefs } from 'pinia';
 import { onShow } from '@dcloudio/uni-app';
 import { useIndexStore } from '@/stores';
-import { useWatcher } from 'alova';
+import { useFetcher, useWatcher } from 'alova';
 
 const store = useIndexStore();
 let { cookie, tabs, currentTagIndex, currentTagName, visited, storageTime } =
@@ -97,12 +97,15 @@ const { data, loading, send, onSuccess } = useWatcher(
     () => $getTabTopics(currentTagName.value),
     [currentTagName],
     {
-        immediate: []
+        initialData: [],
+        immediate: true
     }
 );
 
-onSuccess(({ data }) => {
-    data.value = data.map(item => {
+const { fetch, onSuccess: onSuccess_fetch } = useFetcher();
+
+onSuccess(({ data: res }) => {
+    data.value = res.map(item => {
         let isVisited = false;
         if (visited.value.includes(item.id)) {
             isVisited = true;
@@ -112,6 +115,13 @@ onSuccess(({ data }) => {
     uni.pageScrollTo({
         scrollTop: 0
     });
+    console.log(toRaw(data.value));
+    let next = tabs.value[currentTagIndex.value + 1];
+    next && fetch($getTabTopics(next.value));
+});
+
+onSuccess_fetch(() => {
+    console.log(toRaw(data.value));
 });
 
 function onTagChange(index) {

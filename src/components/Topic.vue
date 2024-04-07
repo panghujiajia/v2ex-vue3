@@ -33,7 +33,7 @@ const { item } = toRefs(props);
         font-weight: 500;
         color: #333333;
         line-height: 45rpx;
-        margin-top: 5rpx;
+        margin: 10rpx 0;
     }
 
     .topic-info {

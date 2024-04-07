@@ -7,7 +7,9 @@ import { useSetMeta } from '@/hooks';
 dayjs.extend(relativeTime);
 
 export const $getTabTopics = tab => {
-    return useSetMeta($http.Get(`/topics/tab/${tab}`));
+    return useSetMeta($http.Get(`/topics/tab/${tab}`), {
+        loading: false
+    });
 };
 
 export const $getAllTopics = params => {
