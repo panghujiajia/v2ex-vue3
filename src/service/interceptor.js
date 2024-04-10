@@ -5,6 +5,7 @@ import { useIndexStore } from '@/stores';
 import { wait } from '@/hooks';
 
 const { dev } = useIndexStore();
+console.log(dev);
 const instOption = {
     ...AdapterUniapp(),
     timeout: 30 * 1000,
@@ -64,6 +65,7 @@ const instOption = {
             if (method.meta.loading) {
                 uni.hideLoading();
             }
+            return Promise.reject(false);
         },
         onComplete: event => {
             // console.log(event);

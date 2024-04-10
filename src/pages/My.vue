@@ -155,6 +155,7 @@
 
 <script setup>
 import { storeToRefs } from 'pinia';
+import { useIndexStore } from '@/stores';
 
 const store = useIndexStore();
 

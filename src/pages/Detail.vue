@@ -1,11 +1,11 @@
 <template>
     <view class="container">
         <Skeleton v-if="loading || fetching" type="detail"></Skeleton>
-        <LoadFaild
-            v-else-if="!detail.title"
+        <LoadFailed
+            v-else-if="!detail.title && finished"
             :status="true"
             @reload="reload()"
-        ></LoadFaild>
+        ></LoadFailed>
         <template v-else>
             <view class="topic-wrap">
                 <AuthorInfo :item="detail"></AuthorInfo>
@@ -29,8 +29,8 @@
                 <TopicTag :item="detail"></TopicTag>
             </view>
             <view class="divider"></view>
-            <view class="reply-option">
-                <view v-if="total" class="reply-num"> {{ total }}条回复</view>
+            <view class="reply-option" v-if="total">
+                <view class="reply-num"> {{ total }}条回复</view>
                 <view class="tabs">
                     <text
                         v-for="(item, index) in items"
@@ -73,7 +73,7 @@ import { $getTopicDetail } from '@/service';
 import { onPullDownRefresh } from '@dcloudio/uni-app';
 import { useIndexStore } from '@/stores';
 import { usePagination } from '@alova/scene-vue';
-import LoadFaild from '@/components/LoadFailed.vue';
+import LoadFailed from '@/components/LoadFailed.vue';
 import Skeleton from '@/components/Skeleton.vue';
 import AuthorInfo from '@/components/AuthorInfo.vue';
 import MarkDown from '@/components/MarkDown.vue';
@@ -86,9 +86,12 @@ const store = useIndexStore();
 const items = ['正序', '倒序', 'OP'];
 const current = ref(0);
 
+const finished = ref(false);
+
 const reverseData = ref([]);
 const positiveData = ref([]);
 const opData = ref([]);
+const hotData = ref([]); // 热门评论
 
 const detail = ref({
     id: '',
@@ -127,7 +130,8 @@ const {
     total,
     page,
     isLastPage,
-    onSuccess
+    onSuccess,
+    onComplete
 } = usePagination(
     (page, pageSize) => $getTopicDetail({ id: props.id, p: page }),
     {
@@ -185,6 +189,10 @@ onSuccess(({ data: res }) => {
             item => item.is_master
         );
     }
+});
+
+onComplete(() => {
+    finished.value = true;
 });
 
 onPullDownRefresh(reload);

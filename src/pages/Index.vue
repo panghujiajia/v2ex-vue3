@@ -56,14 +56,14 @@ import NavBar from '@/components/NavBar';
 import LoadFailed from '@/components/LoadFailed.vue';
 import NoMore from '@/components/NoMore';
 import { ref, toRaw } from 'vue';
-import { $getTabTopics } from '@/service';
+import { $getTabTopics, $getTopicDetail } from '@/service';
 import { storeToRefs } from 'pinia';
 import { onShow } from '@dcloudio/uni-app';
 import { useIndexStore } from '@/stores';
 import { useFetcher, useWatcher } from 'alova';
 
 const store = useIndexStore();
-let { cookie, tabs, currentTagIndex, currentTagName, visited, storageTime } =
+let { cookie, tabs, currentTagIndex, currentTagName, visited } =
     storeToRefs(store);
 
 let scrollY = ref(true);
@@ -105,20 +105,35 @@ const { data, loading, send, onSuccess } = useWatcher(
 const { fetch, onSuccess: onSuccess_fetch } = useFetcher();
 
 onSuccess(({ data: res }) => {
-    data.value = res.map(item => {
-        let isVisited = false;
-        if (visited.value.includes(item.id)) {
-            isVisited = true;
-        }
-        return { ...item, visited: isVisited };
-    });
+    data.value =
+        res &&
+        res.map(item => {
+            let isVisited = false;
+            if (visited.value.includes(item.id)) {
+                isVisited = true;
+            }
+            return { ...item, visited: isVisited };
+        });
     uni.pageScrollTo({
         scrollTop: 0
     });
-    console.log(toRaw(data.value));
-    let next = tabs.value[currentTagIndex.value + 1];
-    next && fetch($getTabTopics(next.value));
+    needFetchDetail();
+    // let next = tabs.value[currentTagIndex.value + 1];
+    // next && fetch($getTabTopics(next.value));
 });
+
+function needFetchDetail() {
+    const list = toRaw(data.value);
+    for (let i = 0; i < list.length; i++) {
+        const item = list[i];
+        if (item.reply_num > 100) {
+            const page = Math.ceil(item.reply_num / 100);
+            for (let j = 1; j <= page; j++) {
+                fetch($getTopicDetail({ id: item.id, p: j }));
+            }
+        }
+    }
+}
 
 onSuccess_fetch(() => {
     console.log(toRaw(data.value));

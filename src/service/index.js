@@ -21,8 +21,7 @@ export const $getAllTopics = params => {
 
 export const $getTopicDetail = ({ id, p }) => {
     const store = useIndexStore();
-    const suffix = p ? `${id}/${p}` : id;
-    return useSetMeta($http.Get(`/topics/detail/${suffix}`), {
+    return useSetMeta($http.Get(`/topics/detail/${id}/${p}`), {
         ignoreToken: !store.cookie,
         loading: false
     });

@@ -14,6 +14,7 @@ import {
 export const useIndexStore = defineStore(
     'v2ex',
     () => {
+        const dev = import.meta.env.DEV;
         const tabs = reactive(topTags);
 
         let currentTagIndex = ref(0);
@@ -29,7 +30,6 @@ export const useIndexStore = defineStore(
         let autoSign = ref(false);
         let autoNavigate = ref(true);
         let cookie = ref('');
-        let storageTime = ref(15);
         let toastTitle = ref('');
         let notifications = ref(0);
         let visited = ref([]);
@@ -43,23 +43,12 @@ export const useIndexStore = defineStore(
             password: ''
         });
 
-        let topicData = reactive({});
-
         function updateVisited(id) {
             visited.value.push(id);
         }
 
         function toggleAutoNavigate(data) {
             autoNavigate.value = data;
-        }
-
-        function updateTopicData(params) {
-            const { key, data } = params;
-            topicData[key] = data;
-        }
-
-        function getTopicData(key) {
-            return topicData[key];
         }
 
         function changeTagIndex(index) {
@@ -175,6 +164,7 @@ export const useIndexStore = defineStore(
         }
 
         return {
+            dev,
             allTag,
             myTag,
             currentTagIndex,
@@ -186,15 +176,11 @@ export const useIndexStore = defineStore(
             toastTitle,
             notifications,
             userInfo,
-            topicData,
-            storageTime,
             visited,
             v2exConfig,
             historyTopic,
             toggleAutoSign,
             changeTagIndex,
-            updateTopicData,
-            getTopicData,
             getV2exConfig,
             updateMyTag,
             updateVisited,
@@ -211,20 +197,6 @@ export const useIndexStore = defineStore(
         };
     },
     {
-        persist: {
-            paths: [
-                'myTag',
-                'v2exConfig',
-                'currentTabBar',
-                'autoSign',
-                'autoNavigate',
-                'cookie',
-                'storageTime',
-                'visited',
-                'userInfo',
-                'topicData',
-                'historyTopic'
-            ]
-        }
+        persist: true
     }
 );

@@ -54,12 +54,13 @@ function getUserTopic(username) {
         height: 60rpx;
         margin-right: 20rpx;
         border-radius: 8rpx;
-        box-shadow: 0 0 3rpx #dedede;
     }
+
     .flex {
         display: flex;
         align-items: center;
     }
+
     .name {
         font-size: 28rpx;
         font-family: PingFangSC-Medium, PingFang SC;
