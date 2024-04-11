@@ -29,7 +29,7 @@
                     v-if="loading || currentTagIndex !== tagIndex"
                 ></Skeleton>
                 <LoadFailed
-                    v-else-if="!data.length"
+                    v-else-if="error === false"
                     :status="true"
                     @reload="send()"
                 ></LoadFailed>
@@ -93,7 +93,7 @@ function getTopicsDetail(id) {
     });
 }
 
-const { data, loading, send, onSuccess } = useWatcher(
+const { data, loading, send, onSuccess, error } = useWatcher(
     () => $getTabTopics(currentTagName.value),
     [currentTagName],
     {
@@ -102,7 +102,9 @@ const { data, loading, send, onSuccess } = useWatcher(
     }
 );
 
-const { fetch, onSuccess: onSuccess_fetch } = useFetcher();
+const { fetch, onSuccess: onSuccess_fetch } = useFetcher({
+    updateState: false
+});
 
 onSuccess(({ data: res }) => {
     data.value =
@@ -118,9 +120,13 @@ onSuccess(({ data: res }) => {
         scrollTop: 0
     });
     needFetchDetail();
-    // let next = tabs.value[currentTagIndex.value + 1];
-    // next && fetch($getTabTopics(next.value));
+    needFetchOtherTabs();
 });
+
+function needFetchOtherTabs() {
+    const next = tabs.value[currentTagIndex.value + 1];
+    next && fetch($getTabTopics(next.value));
+}
 
 function needFetchDetail() {
     const list = toRaw(data.value);
@@ -135,9 +141,7 @@ function needFetchDetail() {
     }
 }
 
-onSuccess_fetch(() => {
-    console.log(toRaw(data.value));
-});
+onSuccess_fetch(() => {});
 
 function onTagChange(index) {
     store.changeTagIndex(index);

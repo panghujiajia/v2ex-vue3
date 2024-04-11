@@ -4,8 +4,6 @@ import { storeToRefs } from 'pinia';
 import { useIndexStore } from '@/stores';
 import { wait } from '@/hooks';
 
-const { dev } = useIndexStore();
-console.log(dev);
 const instOption = {
     ...AdapterUniapp(),
     timeout: 30 * 1000,
@@ -25,7 +23,7 @@ const instOption = {
                         icon: 'none'
                     });
                 }
-                return Promise.reject(method);
+                return Promise.reject(false);
             }
             method.config.headers.token = cookie.value;
         }
@@ -75,7 +73,7 @@ const instOption = {
         }
     },
     errorLogger: true,
-    cacheLogger: dev
+    cacheLogger: import.meta.env.DEV
 };
 export const $http = createAlova({
     ...instOption,

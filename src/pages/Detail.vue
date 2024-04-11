@@ -2,7 +2,7 @@
     <view class="container">
         <Skeleton v-if="loading || fetching" type="detail"></Skeleton>
         <LoadFailed
-            v-else-if="!detail.title && finished"
+            v-else-if="error === false"
             :status="true"
             @reload="reload()"
         ></LoadFailed>
@@ -30,7 +30,9 @@
             </view>
             <view class="divider"></view>
             <view class="reply-option" v-if="total">
-                <view class="reply-num"> {{ total }}条回复</view>
+                <view class="reply-num">
+                    {{ total }}条回复{{ typeof error }}</view
+                >
                 <view class="tabs">
                     <text
                         v-for="(item, index) in items"
@@ -53,12 +55,12 @@
                         {{ `${item.index}楼` }}
                     </view>
                 </view>
-                <MarkDown
-                    v-if="item.quote"
-                    class="quote"
-                    :content="item.quote"
-                ></MarkDown>
-                <MarkDown class="md" :content="item.content"></MarkDown>
+                <view class="md-wrap">
+                    <view class="quote-wrap" v-if="item.quote">
+                        <MarkDown :content="item.quote"></MarkDown>
+                    </view>
+                    <MarkDown :content="item.content"></MarkDown>
+                </view>
             </view>
             <!-- #ifdef MP-WEIXIN -->
             <ad unit-id="adunit-6996f541fca34984"></ad>
@@ -126,6 +128,7 @@ const {
     loading,
     fetching,
     send,
+    error,
     reload,
     total,
     page,
@@ -311,12 +314,18 @@ text {
     .md,
     .quote {
         margin-left: 80rpx;
-        border-bottom: 1px solid #f5f5f5;
         padding-bottom: 25rpx;
         padding-right: 30rpx;
     }
 
-    .quote {
+    .md-wrap {
+        margin-left: 80rpx;
+        padding-bottom: 25rpx;
+        padding-right: 30rpx;
+        border-bottom: 1px solid #f5f5f5;
+    }
+
+    .quote-wrap {
         background: #f9f9f9;
         padding: 20rpx 20rpx 0;
         margin-right: 30rpx;
