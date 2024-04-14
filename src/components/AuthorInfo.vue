@@ -1,10 +1,12 @@
 <template>
     <view class="author-info">
-        <image
-            :src="props.item.avatar"
+        <uv-avatar
             class="avatar"
+            shape="square"
+            size="60rpx"
+            :src="props.item.avatar"
             @click.stop.prevent="getUserTopic(props.item.author)"
-        />
+        ></uv-avatar>
         <view>
             <view class="flex">
                 <view

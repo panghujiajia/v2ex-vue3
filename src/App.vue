@@ -12,7 +12,7 @@ export default {
 };
 </script>
 
-<style lang="less">
+<style lang="scss">
 html,
 body,
 uni-page-body,
@@ -24,13 +24,14 @@ page {
     /* #ifdef APP-PLUS */
     height: 100vh;
     /* #endif */
+    font-family: PingFangSC-Regular, PingFang SC;
 }
-/deep/.uni-scroll-view::-webkit-scrollbar {
-    height: 0;
-    width: 0;
-    background: transparent;
-    display: none;
-}
+//* /deep/.uni-scroll-view::-webkit-scrollbar {
+//    height: 0;
+//    width: 0;
+//    background: transparent;
+//    display: none;
+//}
 view {
     margin: 0;
     padding: 0;
@@ -39,17 +40,7 @@ view {
 }
 .container {
     padding-bottom: env(safe-area-inset-bottom);
-}
-.btn-default {
-    margin: 20rpx auto;
-    width: 240rpx;
-    height: 80rpx;
-    line-height: 80rpx;
-    border-radius: 60rpx;
-    color: #fff;
-    text-align: center;
-    background: #4474ff;
-    font-size: 28rpx;
+    position: relative;
 }
 .list-wrap {
     height: 100%;

@@ -2,9 +2,9 @@
     <mp-html
         v-if="props.content"
         :content="props.content"
-        :copyLink="false"
         markdown
         selectable
+        loading-img="https://via.placeholder.com/400x250.png?text=V2EX"
         @linktap="linkClick"
     />
 </template>

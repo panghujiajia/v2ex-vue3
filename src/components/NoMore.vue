@@ -11,9 +11,7 @@ let tips = ref([
     '去看看别的吧',
     '休息一下',
     '让眼睛放松一下',
-    '无了',
-    '就到这吧',
-    '你的快递拿了吗'
+    '无了'
 ]);
 let index = ref(Math.floor(Math.random() * tips.value.length));
 </script>

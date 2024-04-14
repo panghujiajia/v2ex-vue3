@@ -59,10 +59,7 @@
         {
             "path": "pages/Detail",
             "style": {
-                "enablePullDownRefresh": true,
-                // #ifdef H5
-                "navigationStyle": "custom"
-                // #endif H5
+                "enablePullDownRefresh": true
             }
         },
         {
@@ -134,5 +131,11 @@
         "scrollIndicator": "none",
         "rpxCalcMaxDeviceWidth": 640,
         "rpxCalcBaseDeviceWidth": 375
+    },
+    "easycom": {
+        "autoscan": true,
+        "custom": {
+            "^uv-(.*)": "@climblee/uv-ui/components/uv-$1/uv-$1.vue"
+        }
     }
 }

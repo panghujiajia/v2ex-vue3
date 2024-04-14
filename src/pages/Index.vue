@@ -38,7 +38,7 @@
                         v-for="item in data"
                         :key="item.id"
                         class="item"
-                        @click="getTopicsDetail(item.id)"
+                        @click="getTopicsDetail(item)"
                     >
                         <Topic :item="item" :visited="false"></Topic>
                     </view>
@@ -80,7 +80,8 @@ onShow(() => {
     // #endif
 });
 
-function getTopicsDetail(id) {
+function getTopicsDetail(detail) {
+    const { id } = detail;
     if (!visited.value.includes(id)) {
         store.updateVisited(id);
         const target = data.value.find(item => {
@@ -88,6 +89,7 @@ function getTopicsDetail(id) {
         });
         target.visited = true;
     }
+    store.saveTopicBaseInfo(detail);
     uni.navigateTo({
         url: `/pages/Detail?id=${id}`
     });
@@ -132,7 +134,7 @@ function needFetchDetail() {
     const list = toRaw(data.value);
     for (let i = 0; i < list.length; i++) {
         const item = list[i];
-        if (item.reply_num > 100) {
+        if (item.reply_num > 100 && !item.visited) {
             const page = Math.ceil(item.reply_num / 100);
             for (let j = 1; j <= page; j++) {
                 fetch($getTopicDetail({ id: item.id, p: j }));

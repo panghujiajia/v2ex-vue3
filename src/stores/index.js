@@ -17,23 +17,35 @@ export const useIndexStore = defineStore(
         const dev = import.meta.env.DEV;
         const tabs = reactive(topTags);
 
-        let currentTagIndex = ref(0);
-        let currentTagName = ref('top');
+        const currentTagIndex = ref(0);
+        const currentTagName = ref('top');
 
-        let allTag = reactive(allTags);
-        let myTag = ref([]);
+        const allTag = reactive(allTags);
+        const myTag = ref([]);
 
-        let v2exConfig = ref({});
+        const v2exConfig = ref({});
 
-        let historyTopic = ref([]);
+        const historyTopic = ref([]);
 
-        let autoSign = ref(false);
-        let autoNavigate = ref(true);
-        let cookie = ref('');
-        let toastTitle = ref('');
-        let notifications = ref(0);
-        let visited = ref([]);
-        let userInfo = ref({
+        const topicBaseInfo = ref({
+            id: '',
+            title: '',
+            reply_num: '',
+            tag_name: '',
+            tag_link: '',
+            author: '',
+            avatar: '',
+            last_reply_time: '',
+            replyer: ''
+        });
+
+        const autoSign = ref(false);
+        const autoNavigate = ref(true);
+        const cookie = ref('');
+        const toastTitle = ref('');
+        const notifications = ref(0);
+        const visited = ref([]);
+        const userInfo = ref({
             avatar: '',
             balance: [],
             sign_in_day: '',
@@ -42,6 +54,10 @@ export const useIndexStore = defineStore(
             username: '',
             password: ''
         });
+
+        function saveTopicBaseInfo(info) {
+            topicBaseInfo.value = info;
+        }
 
         function updateVisited(id) {
             visited.value.push(id);
@@ -61,7 +77,7 @@ export const useIndexStore = defineStore(
         }
 
         function updateMyTag(tag) {
-            myTag = tag;
+            myTag.value = tag;
         }
 
         function updateV2exConfig(data) {
@@ -179,6 +195,8 @@ export const useIndexStore = defineStore(
             visited,
             v2exConfig,
             historyTopic,
+            topicBaseInfo,
+            saveTopicBaseInfo,
             toggleAutoSign,
             changeTagIndex,
             getV2exConfig,
