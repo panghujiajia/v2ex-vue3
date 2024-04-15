@@ -33,7 +33,7 @@
                     props.item.publish_time ||
                     props.item.reply_time
                 }}
-                <template v-if="props.item.last_reply_time">
+                <template v-if="props.item.replyer">
                     {{ props.item.replyer }} 回复
                 </template>
             </view>

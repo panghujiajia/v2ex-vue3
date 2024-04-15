@@ -25,7 +25,7 @@
                 <v-author :item="detail"></v-author>
                 <view class="title">{{ detail.title }}</view>
                 <uv-skeletons
-                    :loading="loading"
+                    :loading="loading || data.length !== total"
                     :skeleton="[
                         {
                             type: 'line',
@@ -37,7 +37,10 @@
                     <MarkDown :content="detail.content"></MarkDown>
                 </uv-skeletons>
             </view>
-            <view v-if="detail.subtle_list.length" class="base-padding">
+            <view
+                v-if="detail.subtle_list.length && !loading"
+                class="base-padding"
+            >
                 <template
                     v-for="(item, index) in detail.subtle_list"
                     :key="index"
@@ -50,6 +53,7 @@
                         style="padding-left: 20rpx; margin-top: 10rpx"
                         :content="item.content"
                     ></MarkDown>
+                    <uv-gap height="30rpx"></uv-gap>
                 </template>
             </view>
             <view class="tag-wrap">
@@ -61,18 +65,16 @@
                     <v-section title="热门回复"></v-section>
                 </view>
                 <view class="reply-wrap">
-                    <uv-skeletons :loading="loading" :skeleton="skeletonReply">
-                        <v-reply-item
-                            v-for="item in hotData"
-                            :key="item.index"
-                            :item="item"
-                        ></v-reply-item>
-                    </uv-skeletons>
+                    <v-reply-item
+                        v-for="item in hotData"
+                        :key="item.index"
+                        :item="item"
+                    ></v-reply-item>
                 </view>
             </template>
             <uv-gap height="20rpx" bgColor="#f5f5f5"></uv-gap>
             <uv-sticky offset-top="0">
-                <view class="reply-option" v-if="total">
+                <view class="reply-option" v-if="total && !loading">
                     <uv-text
                         type="info"
                         bold
@@ -91,7 +93,12 @@
                 </view>
             </uv-sticky>
             <view class="reply-wrap">
-                <uv-skeletons :loading="loading" :skeleton="skeletonReply">
+                <uv-skeletons
+                    :loading="
+                        loading || (current === 0 && data.length !== total)
+                    "
+                    :skeleton="skeletonReply"
+                >
                     <v-reply-item
                         v-for="item in data"
                         :key="item.index"
@@ -102,8 +109,14 @@
             <!-- #ifdef MP-WEIXIN -->
             <ad unit-id="adunit-6996f541fca34984"></ad>
             <!-- #endif -->
+            <uv-empty
+                v-if="error !== false && !loading && !data.length"
+                icon="https://img01.yzcdn.cn/vant/empty-image-default.png"
+                text="暂无回复"
+                style="padding-bottom: 60px"
+            ></uv-empty>
             <uv-load-more
-                v-if="isLastPage && !loading"
+                v-if="isLastPage && !loading && data.length"
                 status="nomore"
                 height="60"
             />
@@ -219,7 +232,7 @@ const {
         append: true,
         initialPageSize: 100,
         data: response => {
-            let list = response.list;
+            let list = response.list || [];
             list = list.map(item => {
                 return {
                     ...item,
@@ -271,6 +284,7 @@ onSuccess(({ data: res }) => {
         hotData.value = JSON.parse(JSON.stringify(toRaw(data.value))).filter(
             item => item.like_num >= 10
         );
+        console.log(hotData.value);
     }
 });
 
@@ -285,7 +299,7 @@ onPullDownRefresh(reload);
 </script>
 <style lang="scss" scoped>
 .base-padding {
-    padding: 20rpx 30rpx;
+    padding: 25rpx 30rpx;
 }
 
 .topic-wrap {
@@ -294,7 +308,7 @@ onPullDownRefresh(reload);
         color: $uv-main-color;
         line-height: 45rpx;
         font-weight: bold;
-        margin: 20rpx 0;
+        margin: 10rpx 0;
     }
 }
 

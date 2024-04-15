@@ -32,9 +32,9 @@
                 class="weui-tabs-swiper-item"
             >
                 <uv-empty
-                    v-if="error === false"
+                    v-if="error === false || !data.length"
                     icon="https://img01.yzcdn.cn/vant/empty-image-default.png"
-                    text="加载失败"
+                    text="暂无数据"
                     style="padding-top: 160px"
                 >
                     <uv-gap height="30"></uv-gap>
@@ -43,7 +43,7 @@
                         :customStyle="{ padding: '0 25px' }"
                         shape="circle"
                         loadingText="加载中"
-                        text="加载失败"
+                        text="再试一次"
                         @click="send()"
                         :loading="loading"
                     >
@@ -63,30 +63,19 @@
                             )
                         "
                     >
-                        <uv-empty
-                            v-if="error !== false && !data.length"
-                            icon="https://img01.yzcdn.cn/vant/empty-image-default.png"
-                            text="暂无数据"
-                            style="padding-top: 160px"
-                        ></uv-empty>
-                        <template v-else>
-                            <view
-                                v-for="item in data"
-                                :key="item.id"
-                                class="item"
-                                @click="getTopicsDetail(item)"
-                            >
-                                <v-topic
-                                    :item="item"
-                                    :visited="false"
-                                ></v-topic>
-                            </view>
-                            <uv-load-more
-                                v-if="!loading"
-                                status="nomore"
-                                height="60"
-                            />
-                        </template>
+                        <view
+                            v-for="item in data"
+                            :key="item.id"
+                            class="item"
+                            @click="getTopicsDetail(item)"
+                        >
+                            <v-topic :item="item" :visited="false"></v-topic>
+                        </view>
+                        <uv-load-more
+                            v-if="!loading"
+                            status="nomore"
+                            height="60"
+                        />
                     </uv-skeletons>
                 </scroll-view>
             </swiper-item>
@@ -96,7 +85,6 @@
 
 <script setup>
 import VTopic from '@/components/v-topic.vue';
-import LoadFailed from '@/components/LoadFailed.vue';
 import { ref, toRaw } from 'vue';
 import { $getTabTopics, $getTopicDetail } from '@/service';
 import { storeToRefs } from 'pinia';
