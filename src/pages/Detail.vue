@@ -25,7 +25,7 @@
                 <v-author :item="detail"></v-author>
                 <view class="title">{{ detail.title }}</view>
                 <uv-skeletons
-                    :loading="loading || data.length !== total"
+                    :loading="loading"
                     :skeleton="[
                         {
                             type: 'line',
@@ -38,7 +38,7 @@
                 </uv-skeletons>
             </view>
             <view
-                v-if="detail.subtle_list.length && !loading"
+                v-if="detail && detail.subtle_list.length && !loading"
                 class="base-padding"
             >
                 <template
@@ -59,7 +59,7 @@
             <view class="tag-wrap">
                 <v-tag :item="detail"></v-tag>
             </view>
-            <template v-if="hotData.length">
+            <template v-if="hotData.length && !loading">
                 <uv-gap height="20rpx" bgColor="#f5f5f5"></uv-gap>
                 <view class="base-padding hot-data">
                     <v-section title="热门回复"></v-section>
@@ -93,12 +93,7 @@
                 </view>
             </uv-sticky>
             <view class="reply-wrap">
-                <uv-skeletons
-                    :loading="
-                        loading || (current === 0 && data.length !== total)
-                    "
-                    :skeleton="skeletonReply"
-                >
+                <uv-skeletons :loading="loading" :skeleton="skeletonReply">
                     <v-reply-item
                         v-for="item in data"
                         :key="item.index"
@@ -145,6 +140,8 @@ const items = ['正序', '倒序', 'OP'];
 const current = ref(0);
 
 const scrollTop = ref(0);
+
+let timer = null;
 
 const reverseData = ref([]);
 const positiveData = ref([]);
@@ -225,12 +222,27 @@ const {
     total,
     page,
     isLastPage,
-    onSuccess
+    onSuccess,
+    onComplete
 } = usePagination(
     (page, pageSize) => $getTopicDetail({ id: props.id, p: page }),
     {
         append: true,
         initialPageSize: 100,
+        middleware: async (ctx, next) => {
+            if (timer) {
+                clearTimeout(timer);
+            }
+            ctx.controlLoading();
+            ctx.update({ loading: true });
+            await next();
+            timer = setTimeout(
+                () => {
+                    ctx.update({ loading: false });
+                },
+                ctx.cachedResponse ? 300 : 1500
+            );
+        },
         data: response => {
             let list = response.list || [];
             list = list.map(item => {
@@ -246,45 +258,47 @@ const {
         }
     }
 );
-
+onComplete(() => {
+    uni.stopPullDownRefresh();
+});
 onSuccess(({ data: res }) => {
-    detail.value = res.detail;
-    store.saveHistoryTopics(res.detail);
-    if (!isLastPage.value) {
-        page.value++;
-    } else {
-        uni.stopPullDownRefresh();
-        data.value = data.value.map((item, index) => {
-            item.quote = '';
-            const frontData = JSON.parse(JSON.stringify(toRaw(data.value)))
-                .splice(0, index)
-                .reverse();
-            if (frontData.length >= 1) {
-                let excludeAuthor = [];
-                for (let i = 0; i < frontData.length; i++) {
-                    let frontItem = frontData[i];
-                    if (
-                        item.content.includes(frontItem.author) &&
-                        !excludeAuthor.includes(frontItem.author)
-                    ) {
-                        item.quote += `<view>${frontItem.content}</view><view style="display: block;height: 20rpx"></view>`;
-                        excludeAuthor.push(frontItem.author);
+    if (res) {
+        detail.value = res.detail;
+        store.saveHistoryTopics(res.detail);
+        if (!isLastPage.value) {
+            page.value++;
+        } else {
+            data.value = data.value.map((item, index) => {
+                item.quote = '';
+                const frontData = JSON.parse(JSON.stringify(toRaw(data.value)))
+                    .splice(0, index)
+                    .reverse();
+                if (frontData.length >= 1) {
+                    let excludeAuthor = [];
+                    for (let i = 0; i < frontData.length; i++) {
+                        let frontItem = frontData[i];
+                        if (
+                            item.content.includes(frontItem.author) &&
+                            !excludeAuthor.includes(frontItem.author)
+                        ) {
+                            item.quote += `<view>${frontItem.content}</view><view style="display: block;height: 20rpx"></view>`;
+                            excludeAuthor.push(frontItem.author);
+                        }
                     }
                 }
-            }
-            return { ...item, index: index + 1 };
-        });
-        positiveData.value = data.value;
-        reverseData.value = JSON.parse(
-            JSON.stringify(toRaw(data.value))
-        ).reverse();
-        opData.value = JSON.parse(JSON.stringify(toRaw(data.value))).filter(
-            item => item.is_master
-        );
-        hotData.value = JSON.parse(JSON.stringify(toRaw(data.value))).filter(
-            item => item.like_num >= 10
-        );
-        console.log(hotData.value);
+                return { ...item, index: index + 1 };
+            });
+            positiveData.value = data.value;
+            reverseData.value = JSON.parse(
+                JSON.stringify(toRaw(data.value))
+            ).reverse();
+            opData.value = JSON.parse(JSON.stringify(toRaw(data.value))).filter(
+                item => item.is_master
+            );
+            hotData.value = JSON.parse(
+                JSON.stringify(toRaw(data.value))
+            ).filter(item => item.like_num >= 10);
+        }
     }
 });
 
@@ -333,6 +347,7 @@ onPullDownRefresh(reload);
 .hot-data {
     border-bottom: 1px solid $uv-bg-color;
 }
+
 .reply-wrap {
     padding: 25rpx 30rpx 0;
 }

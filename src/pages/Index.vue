@@ -32,7 +32,7 @@
                 class="weui-tabs-swiper-item"
             >
                 <uv-empty
-                    v-if="error === false || !data.length"
+                    v-if="error === false || (!loading && !data.length)"
                     icon="https://img01.yzcdn.cn/vant/empty-image-default.png"
                     text="暂无数据"
                     style="padding-top: 160px"
@@ -180,8 +180,8 @@ onSuccess(({ data: res }) => {
     uni.pageScrollTo({
         scrollTop: 0
     });
-    // needFetchDetail();
-    // needFetchOtherTabs();
+    needFetchDetail();
+    needFetchOtherTabs();
 });
 
 function needFetchOtherTabs() {
@@ -191,13 +191,21 @@ function needFetchOtherTabs() {
 
 function needFetchDetail() {
     const list = toRaw(data.value);
+    let id = '';
+    let max = 0;
     for (let i = 0; i < list.length; i++) {
         const item = list[i];
         if (item.reply_num > 100 && !item.visited) {
-            const page = Math.ceil(item.reply_num / 100);
-            for (let j = 1; j <= page; j++) {
-                fetch($getTopicDetail({ id: item.id, p: j }));
+            if (item.reply_num > max) {
+                max = item.reply_num;
+                id = item.id;
             }
+        }
+    }
+    if (id) {
+        const page = Math.ceil(max / 100);
+        for (let p = 1; p <= page; p++) {
+            fetch($getTopicDetail({ id, p }));
         }
     }
 }
@@ -213,7 +221,6 @@ function handleSwiperChange({ detail: { current } }) {
 }
 
 function handleChange({ index }) {
-    console.log(index);
     index !== undefined && onTagChange(index);
 }
 
