@@ -15,7 +15,7 @@
                 v-for="(item, index) in historyTopic"
                 :key="index"
                 class="item"
-                @click.stop="getTopicsDetail(item.id)"
+                @click.stop="getTopicsDetail(item)"
             >
                 <Topic :item="item"></Topic>
             </view>

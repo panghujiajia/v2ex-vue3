@@ -6,32 +6,34 @@
             scroll-x="true"
         >
             <view
-                v-for="(item, index) in list"
+                v-for="(item, index) in tabs"
                 :id="'tabid_' + index"
                 :key="index"
                 :class="current === index ? 'cur' : ''"
-                class="item"
-                @click="onClick(index)"
+                class="tab"
+                @click="emit('change', index)"
             >
-                <text>{{ item.title }}</text>
+                <text>{{ item.name }}</text>
             </view>
         </scroll-view>
     </view>
 </template>
 <script setup>
 import { toRefs } from 'vue';
+import { useIndexStore } from '@/stores';
+import { storeToRefs } from 'pinia';
 
-const props = defineProps(['list', 'current']);
+const props = defineProps(['current']);
 
-const { list, current } = toRefs(props);
+const store = useIndexStore();
 
-const emit = defineEmits(['tagChange']);
+const { tabs } = storeToRefs(store);
+console.log(tabs.value);
+const { current } = toRefs(props);
 
-function onClick(index) {
-    emit('tagChange', index);
-}
+const emit = defineEmits(['change']);
 </script>
-<style lang="less" scoped>
+<style lang="scss" scoped>
 .nav-bar-wrap {
     height: 80rpx;
 }
@@ -46,7 +48,7 @@ function onClick(index) {
     line-height: 80rpx;
     white-space: nowrap;
     box-sizing: border-box;
-    .item {
+    .tab {
         display: inline-block;
         color: #666;
         font-size: 26rpx;
@@ -64,9 +66,9 @@ function onClick(index) {
         &.cur {
             font-size: 32rpx;
             font-weight: bold;
-            color: #4474ff;
+            color: $uv-primary;
             text {
-                border-bottom: 4rpx solid #4474ff;
+                border-bottom: 4rpx solid $uv-primary;
             }
         }
     }

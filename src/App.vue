@@ -50,4 +50,9 @@ view {
     display: flex;
     flex-direction: column;
 }
+.item {
+    padding: 25rpx 30rpx;
+    border-bottom: 20rpx solid #f5f5f5;
+    white-space: normal;
+}
 </style>

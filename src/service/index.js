@@ -15,7 +15,8 @@ export const $getTabTopics = tab => {
 export const $getAllTopics = params => {
     const store = useIndexStore();
     return useSetMeta($http.Get(`/topics/all/${params.tab}/${params.p}`), {
-        ignoreToken: !store.cookie
+        ignoreToken: !store.cookie,
+        loading: false
     });
 };
 

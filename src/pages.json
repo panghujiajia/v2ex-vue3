@@ -35,18 +35,14 @@
         {
             "path": "pages/Index",
             "style": {
+                "enablePullDownRefresh": true,
                 // #ifdef H5
                 "navigationStyle": "custom"
                 // #endif H5
             }
         },
         {
-            "path": "pages/All",
-            "style": {
-                // #ifdef H5
-                "navigationStyle": "custom"
-                // #endif H5
-            }
+            "path": "pages/All"
         },
         {
             "path": "pages/My",
@@ -65,10 +61,7 @@
         {
             "path": "pages/Tag",
             "style": {
-                "enablePullDownRefresh": true,
-                // #ifdef H5
-                "navigationStyle": "custom"
-                // #endif H5
+                "enablePullDownRefresh": true
             }
         },
         {

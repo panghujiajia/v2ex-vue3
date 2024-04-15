@@ -1,145 +1,152 @@
 <template>
     <view class="container">
-        <Skeleton v-if="loading && loadType === 'refresh'"></Skeleton>
-        <LoadFaild
-            v-else-if="!list.length"
-            :status="true"
-            @reload="getList()"
-        ></LoadFaild>
-        <view v-else>
-            <view class="topic-header">
-                <view class="header-top">
-                    <text class="name">
-                        {{ title || nodeInfo.topic_title || '' }}
-                    </text>
-                    主题总数 {{ nodeInfo.topic_count || 0 }}
-                </view>
-                <view class="header-bottom">
-                    {{ nodeInfo.topic_intro || 'World is powered by solitude' }}
-                </view>
+        <uv-back-top :scroll-top="scrollTop" top="800"></uv-back-top>
+        <uv-empty
+            v-if="error === false"
+            icon="https://img01.yzcdn.cn/vant/empty-image-default.png"
+            text="加载失败"
+            style="padding-top: 160px"
+        >
+            <uv-gap height="30"></uv-gap>
+            <uv-button
+                type="primary"
+                :customStyle="{ padding: '0 25px' }"
+                shape="circle"
+                loadingText="加载中"
+                text="加载失败"
+                @click="reload()"
+                :loading="loading"
+            >
+                再试一次
+            </uv-button>
+        </uv-empty>
+        <view class="topic-header">
+            <view class="header-top">
+                <text class="name">
+                    {{ title || detail.topic_title || '' }}
+                </text>
+                主题总数 {{ detail.topic_count || 0 }}
             </view>
-            <view class="list-wrap">
+            <view class="header-bottom">
+                {{ detail.topic_intro || 'World is powered by solitude' }}
+            </view>
+        </view>
+        <view class="list-wrap">
+            <uv-skeletons
+                :loading="loading && page === 1"
+                :skeleton="
+                    skeleton.concat(
+                        skeleton,
+                        skeleton,
+                        skeleton,
+                        skeleton,
+                        skeleton,
+                        skeleton
+                    )
+                "
+            >
                 <view
-                    v-for="(item, index) in list"
+                    v-for="(item, index) in data"
                     :key="index"
                     class="item"
-                    @click="getTopicsDetail(item.id)"
+                    @click="getTopicsDetail(item)"
                 >
-                    <Topic :item="item" :visited="false"></Topic>
+                    <v-topic :item="item"></v-topic>
                 </view>
-            </view>
-            <NoMore v-if="noMore"></NoMore>
+                <uv-load-more
+                    :status="
+                        isLastPage ? 'nomore' : loading ? 'loading' : 'loadmore'
+                    "
+                    height="60"
+                />
+            </uv-skeletons>
         </view>
     </view>
 </template>
 <script setup>
-import Topic from '@/components/Topic';
-import Skeleton from '@/components/Skeleton';
-import LoadFaild from '@/components/LoadFailed.vue';
-import NoMore from '@/components/NoMore';
 import { storeToRefs } from 'pinia';
-import { reactive, ref } from 'vue';
+import { ref } from 'vue';
 import { $getAllTopics } from '../service';
-import { onLoad, onPullDownRefresh, onReachBottom } from '@dcloudio/uni-app';
+import {
+    onPageScroll,
+    onPullDownRefresh,
+    onReachBottom
+} from '@dcloudio/uni-app';
+import VTopic from '@/components/v-topic.vue';
+import { useIndexStore } from '@/stores';
+import { usePagination } from '@alova/scene-vue';
+import { getTopicsDetail } from '@/hooks';
+
+const props = defineProps(['value', 'title']);
 
 const store = useIndexStore();
-let { visited } = storeToRefs(store);
-let list = ref([]);
-let nodeInfo = ref({
+const { visited } = storeToRefs(store);
+const { skeleton } = store;
+
+const scrollTop = ref(0);
+
+const detail = ref({
     topic_count: 0,
     topic_intro: '',
     topic_title: ''
 });
-let params = reactive({
-    p: 1,
-    value: '',
-    title: ''
-});
-let loading = ref(true);
-let noMore = ref(false);
-let loadType = ref('refresh');
 
-const props = defineProps(['value', 'title']);
-onLoad(() => {
-    uni.setNavigationBarTitle({ title: props.title || '节点' });
-    params.value = props.value;
-    params.title = props.title;
-    getList();
+const {
+    data,
+    loading,
+    send,
+    error,
+    reload,
+    total,
+    page,
+    isLastPage,
+    onSuccess,
+    onComplete
+} = usePagination(
+    (page, pageSize) =>
+        $getAllTopics({
+            tab: props.value,
+            p: page
+        }),
+    {
+        append: true,
+        initialPageSize: 20,
+        data: response => response.list || []
+    }
+);
+onComplete(() => {
+    uni.stopPullDownRefresh();
 });
-async function getList() {
-    loading.value = true;
-    const res = await $getAllTopics({
-        tab: params.value,
-        p: params.p
-    });
+onSuccess(({ data: res }) => {
     if (res) {
-        let { data, nodeInfo: info } = res;
-        nodeInfo.value = info;
-        if (!params.title) {
-            uni.setNavigationBarTitle({
-                title: nodeInfo.value.topic_title || '节点'
-            });
-        }
-        const tagArr = data.map(item => {
+        detail.value = res.detail;
+        data.value = data.value.map(item => {
             let isVisited = false;
             if (visited.value.includes(item.id)) {
                 isVisited = true;
             }
-            item.tag_name = params.title;
-            item.tag_link = params.value;
+            item.tag_name = props.title;
+            item.tag_link = props.value;
             item.noNavigate = true;
             return { ...item, visited: isVisited };
         });
-        // 如果是加载更多
-        if (loadType.value === 'loadMore') {
-            if (!noMore.value) {
-                list.value = [...list.value, ...tagArr];
-            }
-        } else {
-            list.value = tagArr;
-            uni.stopPullDownRefresh();
-        }
-        isLastPage();
     }
-    loading.value = false;
-}
-function isLastPage() {
-    const { topic_count } = nodeInfo.value;
-    const len = list.value.length;
-    if (len >= topic_count) {
-        noMore.value = true;
-    }
-}
+});
 
-function getTopicsDetail(id) {
-    if (!visited.value.includes(id)) {
-        store.updateVisited(id);
-        const target = list.value.find(item => {
-            return item.id === id;
-        });
-        target.visited = true;
-    }
-    uni.navigateTo({
-        url: `/pages/Detail?id=${id}`
-    });
-}
+onPageScroll(e => {
+    scrollTop.value = e.scrollTop;
+    // #ifdef APP-NVUE
+    scrollTop.value = e.detail.scrollTop;
+    // #endif
+});
 
-onPullDownRefresh(refresh);
-function refresh() {
-    params.p = 1;
-    loadType.value = 'refresh';
-    noMore.value = false;
-    getList();
-}
-onReachBottom(loadMore);
-function loadMore() {
-    if (noMore.value) {
-        return;
+onPullDownRefresh(reload);
+
+onReachBottom(() => {
+    if (error.value !== false) {
+        page.value++;
     }
-    params.p = ++params.p;
-    loadType.value = 'loadMore';
-    getList();
-}
+});
 </script>
 <style lang="less" scoped>
 .topic-header {
@@ -153,14 +160,17 @@ function loadMore() {
     display: flex;
     flex-direction: column;
     font-weight: 400;
+
     .header-top {
         font-size: 26rpx;
+
         .name {
             font-size: 38rpx;
             margin-right: 20rpx;
             font-weight: 500;
         }
     }
+
     .header-bottom {
         font-size: 28rpx;
         margin-top: 15rpx;

@@ -13,15 +13,11 @@
 </template>
 <script setup>
 const props = defineProps({
-    item: Object,
-    noNavigate: {
-        type: Boolean,
-        default: false
-    }
+    item: Object
 });
 
 function handleClick() {
-    if (props.noNavigate) {
+    if (props.item.noNavigate) {
         uni.showToast({
             title: '禁止套娃',
             icon: 'none'

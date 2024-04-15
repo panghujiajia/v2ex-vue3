@@ -1,18 +1,12 @@
 <template>
     <view class="index-container">
-        <uv-sticky
-            bgColor="#fff"
-            offsetTop="0"
-            customNavHeight="env(safe-area-inset-top)"
-        >
-            <uv-tabs
-                :list="tabs"
-                :current="currentTagIndex"
-                @change="handleChange"
-            ></uv-tabs>
-        </uv-sticky>
+        <v-tabs
+            :current="currentTabIndex"
+            :list="tabs"
+            @change="handleTabChange"
+        />
         <swiper
-            :current="currentTagIndex"
+            :current="currentTabIndex"
             class="weui-tabs-swiper"
             duration="300"
             easing-function="easeOutCubic"
@@ -52,9 +46,9 @@
                 </uv-empty>
                 <scroll-view v-else :scroll-y="scrollY" class="list-wrap">
                     <uv-skeletons
-                        :loading="loading || currentTagIndex !== tagIndex"
+                        :loading="loading || currentTabIndex !== tagIndex"
                         :skeleton="
-                            skeleton.concat(
+                            [].concat(
                                 skeleton,
                                 skeleton,
                                 skeleton,
@@ -69,7 +63,7 @@
                             class="item"
                             @click="getTopicsDetail(item)"
                         >
-                            <v-topic :item="item" :visited="false"></v-topic>
+                            <v-topic :item="item"></v-topic>
                         </view>
                         <uv-load-more
                             v-if="!loading"
@@ -85,49 +79,21 @@
 
 <script setup>
 import VTopic from '@/components/v-topic.vue';
+import VTabs from '@/components/v-tabs.vue';
 import { ref, toRaw } from 'vue';
 import { $getTabTopics, $getTopicDetail } from '@/service';
 import { storeToRefs } from 'pinia';
 import { onShow } from '@dcloudio/uni-app';
 import { useIndexStore } from '@/stores';
 import { useFetcher, useWatcher } from 'alova';
+import { getTopicsDetail } from '@/hooks';
 
 const store = useIndexStore();
-let { cookie, tabs, currentTagIndex, currentTagName, visited } =
+const { cookie, tabs, currentTabIndex, currentTabName, visited } =
     storeToRefs(store);
+const { skeleton } = store;
 
 let scrollY = ref(true);
-const skeleton = [
-    30,
-    {
-        type: 'flex',
-        num: 1,
-        children: [
-            {
-                type: 'custom',
-                num: 1,
-                style: 'width:60rpx;height:60rpx;margin:0 20rpx 0 30rpx;'
-            },
-            {
-                type: 'line',
-                num: 2,
-                gap: 10,
-                style: [
-                    'width:100rpx;height: 25rpx',
-                    'width:160rpx;height: 25rpx'
-                ]
-            }
-        ]
-    },
-    20,
-    {
-        type: 'line',
-        num: 2,
-        gap: 10,
-        style: 'width:calc(100% - 60rpx);marginLeft: 30rpx'
-    },
-    20
-];
 
 onShow(() => {
     if (cookie.value) {
@@ -139,24 +105,9 @@ onShow(() => {
     // #endif
 });
 
-function getTopicsDetail(detail) {
-    const { id } = detail;
-    if (!visited.value.includes(id)) {
-        store.updateVisited(id);
-        const target = data.value.find(item => {
-            return item.id === id;
-        });
-        target.visited = true;
-    }
-    store.saveTopicBaseInfo(detail);
-    uni.navigateTo({
-        url: `/pages/Detail?id=${id}`
-    });
-}
-
 const { data, loading, send, onSuccess, error } = useWatcher(
-    () => $getTabTopics(currentTagName.value),
-    [currentTagName],
+    () => $getTabTopics(currentTabName.value),
+    [currentTabName],
     {
         initialData: [],
         immediate: true
@@ -185,7 +136,7 @@ onSuccess(({ data: res }) => {
 });
 
 function needFetchOtherTabs() {
-    const next = tabs.value[currentTagIndex.value + 1];
+    const next = tabs.value[currentTabIndex.value + 1];
     next && fetch($getTabTopics(next.value));
 }
 
@@ -212,16 +163,12 @@ function needFetchDetail() {
 
 onSuccess_fetch(() => {});
 
-function onTagChange(index) {
-    store.changeTagIndex(index);
+function handleTabChange(index) {
+    store.changeTabIndex(index);
 }
 
 function handleSwiperChange({ detail: { current } }) {
-    store.changeTagIndex(current);
-}
-
-function handleChange({ index }) {
-    index !== undefined && onTagChange(index);
+    store.changeTabIndex(current);
 }
 
 const onTransition = e => {

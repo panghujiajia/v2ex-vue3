@@ -1,6 +1,5 @@
 import { defineStore } from 'pinia';
 import allTags from '../config/allTag.config';
-import topTags from '../config/topTag.config';
 import { reactive, ref } from 'vue';
 import {
     $getLoginReward,
@@ -15,10 +14,55 @@ export const useIndexStore = defineStore(
     'v2ex',
     () => {
         const dev = import.meta.env.DEV;
-        const tabs = reactive(topTags);
+        const tabs = ref([
+            {
+                name: 'Top10',
+                value: 'top'
+            },
+            {
+                name: '全部',
+                value: 'all'
+            },
+            {
+                name: '技术',
+                value: 'tech'
+            },
+            {
+                name: '创意',
+                value: 'creative'
+            },
+            {
+                name: '好玩',
+                value: 'play'
+            },
+            {
+                name: 'Apple',
+                value: 'apple'
+            },
+            {
+                name: '酷工作',
+                value: 'jobs'
+            },
+            {
+                name: '交易',
+                value: 'deals'
+            },
+            {
+                name: '城市',
+                value: 'city'
+            },
+            {
+                name: '问与答',
+                value: 'qna'
+            },
+            {
+                name: '最热',
+                value: 'hot'
+            }
+        ]);
 
-        const currentTagIndex = ref(0);
-        const currentTagName = ref('top');
+        const currentTabIndex = ref(0);
+        const currentTabName = ref('top');
 
         const allTag = reactive(allTags);
         const myTag = ref([]);
@@ -38,6 +82,38 @@ export const useIndexStore = defineStore(
             last_reply_time: '',
             replyer: ''
         });
+
+        const skeleton = [
+            30,
+            {
+                type: 'flex',
+                num: 1,
+                children: [
+                    {
+                        type: 'custom',
+                        num: 1,
+                        style: 'width:60rpx;height:60rpx;margin:0 20rpx 0 30rpx;'
+                    },
+                    {
+                        type: 'line',
+                        num: 2,
+                        gap: 10,
+                        style: [
+                            'width:100rpx;height: 25rpx',
+                            'width:160rpx;height: 25rpx'
+                        ]
+                    }
+                ]
+            },
+            20,
+            {
+                type: 'line',
+                num: 2,
+                gap: 10,
+                style: 'width:calc(100% - 60rpx);marginLeft: 30rpx'
+            },
+            20
+        ];
 
         const autoSign = ref(false);
         const autoNavigate = ref(true);
@@ -67,13 +143,13 @@ export const useIndexStore = defineStore(
             autoNavigate.value = data;
         }
 
-        function changeTagIndex(index) {
-            currentTagIndex.value = index;
-            changeTagName();
+        function changeTabIndex(index) {
+            currentTabIndex.value = index;
+            changeTabName();
         }
 
-        function changeTagName() {
-            currentTagName.value = tabs[currentTagIndex.value].value;
+        function changeTabName() {
+            currentTabName.value = tabs.value[currentTabIndex.value].value;
         }
 
         function updateMyTag(tag) {
@@ -183,8 +259,8 @@ export const useIndexStore = defineStore(
             dev,
             allTag,
             myTag,
-            currentTagIndex,
-            currentTagName,
+            currentTabIndex,
+            currentTabName,
             tabs,
             autoSign,
             autoNavigate,
@@ -196,9 +272,10 @@ export const useIndexStore = defineStore(
             v2exConfig,
             historyTopic,
             topicBaseInfo,
+            skeleton,
             saveTopicBaseInfo,
             toggleAutoSign,
-            changeTagIndex,
+            changeTabIndex,
             getV2exConfig,
             updateMyTag,
             updateVisited,
