@@ -1,17 +1,23 @@
 <template>
     <view class="index-container">
-        <NavBar
-            :current="currentTagIndex"
-            :list="tabs"
-            @tagChange="onTagChange"
-        />
+        <uv-sticky
+            bgColor="#fff"
+            offsetTop="0"
+            customNavHeight="env(safe-area-inset-top)"
+        >
+            <uv-tabs
+                :list="tabs"
+                :current="currentTagIndex"
+                @change="handleChange"
+            ></uv-tabs>
+        </uv-sticky>
         <swiper
             :current="currentTagIndex"
             class="weui-tabs-swiper"
             duration="300"
             easing-function="easeOutCubic"
             @animationfinish="animationFinish"
-            @change="onChange"
+            @change="handleSwiperChange"
             @transition="onTransition"
             @touchmove.prevent.stop="
                 () => {
@@ -25,24 +31,63 @@
                 :data-index="tagIndex"
                 class="weui-tabs-swiper-item"
             >
-                <Skeleton
-                    v-if="loading || currentTagIndex !== tagIndex"
-                ></Skeleton>
-                <LoadFailed
-                    v-else-if="error === false"
-                    :status="true"
-                    @reload="send()"
-                ></LoadFailed>
-                <scroll-view v-else :scroll-y="scrollY" class="list-wrap">
-                    <view
-                        v-for="item in data"
-                        :key="item.id"
-                        class="item"
-                        @click="getTopicsDetail(item)"
+                <uv-empty
+                    v-if="error === false"
+                    icon="https://img01.yzcdn.cn/vant/empty-image-default.png"
+                    text="加载失败"
+                    style="padding-top: 160px"
+                >
+                    <uv-gap height="30"></uv-gap>
+                    <uv-button
+                        type="primary"
+                        :customStyle="{ padding: '0 25px' }"
+                        shape="circle"
+                        loadingText="加载中"
+                        text="加载失败"
+                        @click="send()"
+                        :loading="loading"
                     >
-                        <Topic :item="item" :visited="false"></Topic>
-                    </view>
-                    <NoMore></NoMore>
+                        再试一次
+                    </uv-button>
+                </uv-empty>
+                <scroll-view v-else :scroll-y="scrollY" class="list-wrap">
+                    <uv-skeletons
+                        :loading="loading || currentTagIndex !== tagIndex"
+                        :skeleton="
+                            skeleton.concat(
+                                skeleton,
+                                skeleton,
+                                skeleton,
+                                skeleton,
+                                skeleton
+                            )
+                        "
+                    >
+                        <uv-empty
+                            v-if="error !== false && !data.length"
+                            icon="https://img01.yzcdn.cn/vant/empty-image-default.png"
+                            text="暂无数据"
+                            style="padding-top: 160px"
+                        ></uv-empty>
+                        <template v-else>
+                            <view
+                                v-for="item in data"
+                                :key="item.id"
+                                class="item"
+                                @click="getTopicsDetail(item)"
+                            >
+                                <v-topic
+                                    :item="item"
+                                    :visited="false"
+                                ></v-topic>
+                            </view>
+                            <uv-load-more
+                                v-if="!loading"
+                                status="nomore"
+                                height="60"
+                            />
+                        </template>
+                    </uv-skeletons>
                 </scroll-view>
             </swiper-item>
         </swiper>
@@ -50,11 +95,8 @@
 </template>
 
 <script setup>
-import Topic from '@/components/Topic';
-import Skeleton from '@/components/Skeleton';
-import NavBar from '@/components/NavBar';
+import VTopic from '@/components/v-topic.vue';
 import LoadFailed from '@/components/LoadFailed.vue';
-import NoMore from '@/components/NoMore';
 import { ref, toRaw } from 'vue';
 import { $getTabTopics, $getTopicDetail } from '@/service';
 import { storeToRefs } from 'pinia';
@@ -67,8 +109,37 @@ let { cookie, tabs, currentTagIndex, currentTagName, visited } =
     storeToRefs(store);
 
 let scrollY = ref(true);
-
-let list = ref([]);
+const skeleton = [
+    30,
+    {
+        type: 'flex',
+        num: 1,
+        children: [
+            {
+                type: 'custom',
+                num: 1,
+                style: 'width:60rpx;height:60rpx;margin:0 20rpx 0 30rpx;'
+            },
+            {
+                type: 'line',
+                num: 2,
+                gap: 10,
+                style: [
+                    'width:100rpx;height: 25rpx',
+                    'width:160rpx;height: 25rpx'
+                ]
+            }
+        ]
+    },
+    20,
+    {
+        type: 'line',
+        num: 2,
+        gap: 10,
+        style: 'width:calc(100% - 60rpx);marginLeft: 30rpx'
+    },
+    20
+];
 
 onShow(() => {
     if (cookie.value) {
@@ -121,8 +192,8 @@ onSuccess(({ data: res }) => {
     uni.pageScrollTo({
         scrollTop: 0
     });
-    needFetchDetail();
-    needFetchOtherTabs();
+    // needFetchDetail();
+    // needFetchOtherTabs();
 });
 
 function needFetchOtherTabs() {
@@ -149,10 +220,14 @@ function onTagChange(index) {
     store.changeTagIndex(index);
 }
 
-const onChange = e => {
-    const { current } = e.detail;
-    onTagChange(current);
-};
+function handleSwiperChange({ detail: { current } }) {
+    store.changeTagIndex(current);
+}
+
+function handleChange({ index }) {
+    console.log(index);
+    index !== undefined && onTagChange(index);
+}
 
 const onTransition = e => {
     scrollY.value = false;
@@ -183,5 +258,10 @@ const animationFinish = e => {
         width: 100%;
         overflow: hidden;
     }
+}
+.item {
+    padding: 25rpx 30rpx;
+    border-bottom: 20rpx solid #f5f5f5;
+    white-space: normal;
 }
 </style>

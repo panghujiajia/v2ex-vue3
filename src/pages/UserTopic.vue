@@ -20,7 +20,7 @@
     </view>
 </template>
 <script setup>
-import Topic from '@/components/Topic.vue';
+import Topic from '@/components/v-topic.vue';
 import { $getUserTopics } from '../service';
 import Skeleton from '@/components/Skeleton.vue';
 import LoadFaild from '@/components/LoadFailed.vue';

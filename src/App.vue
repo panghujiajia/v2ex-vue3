@@ -39,6 +39,8 @@ view {
     font-size: 28rpx;
 }
 .container {
+    padding-bottom: 0;
+    padding-bottom: constant(safe-area-inset-bottom);
     padding-bottom: env(safe-area-inset-bottom);
     position: relative;
 }
@@ -47,12 +49,5 @@ view {
     overflow: hidden;
     display: flex;
     flex-direction: column;
-    .item {
-        white-space: normal;
-        border-bottom: 20rpx solid #f5f5f5;
-        display: inline-block;
-        width: 100%;
-        box-sizing: border-box;
-    }
 }
 </style>

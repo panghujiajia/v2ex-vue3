@@ -45,7 +45,7 @@
     </view>
 </template>
 <script setup>
-import Topic from '@/components/Topic.vue';
+import Topic from '@/components/v-topic.vue';
 import MarkDown from '@/components/MarkDown.vue';
 import LoadFaild from '@/components/LoadFailed.vue';
 import NoMore from '@/components/NoMore';

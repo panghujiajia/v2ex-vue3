@@ -1,10 +1,10 @@
 <template>
-    <view class="container" ref="backTop">
+    <view class="container">
         <uv-back-top :scroll-top="scrollTop" top="800"></uv-back-top>
         <uv-empty
             v-if="error === false"
             icon="https://img01.yzcdn.cn/vant/empty-image-default.png"
-            :text="useRandomText('load')"
+            text="加载失败"
             style="padding-top: 160px"
         >
             <uv-gap height="30"></uv-gap>
@@ -13,7 +13,7 @@
                 :customStyle="{ padding: '0 25px' }"
                 shape="circle"
                 loadingText="加载中"
-                :text="useRandomText()"
+                text="加载失败"
                 @click="reload()"
                 :loading="loading"
             >
@@ -21,8 +21,8 @@
             </uv-button>
         </uv-empty>
         <template v-else>
-            <view class="topic-wrap">
-                <AuthorInfo :loading="!loading" :item="detail"></AuthorInfo>
+            <view class="topic-wrap base-padding">
+                <v-author :item="detail"></v-author>
                 <view class="title">{{ detail.title }}</view>
                 <uv-skeletons
                     :loading="loading"
@@ -37,23 +37,40 @@
                     <MarkDown :content="detail.content"></MarkDown>
                 </uv-skeletons>
             </view>
-            <view v-if="detail.subtle_list.length" class="subtle-wrap">
+            <view v-if="detail.subtle_list.length" class="base-padding">
                 <template
                     v-for="(item, index) in detail.subtle_list"
                     :key="index"
                 >
-                    <view class="title">
-                        第{{ index + 1 }}条附言 {{ item.time }}
-                    </view>
-                    <view class="content" :class="{ loading }">
-                        <MarkDown :content="item.content"></MarkDown>
-                    </view>
+                    <v-section
+                        :title="`第${index + 1}条附言`"
+                        :sub-title="item.time"
+                    ></v-section>
+                    <MarkDown
+                        style="padding-left: 20rpx; margin-top: 10rpx"
+                        :content="item.content"
+                    ></MarkDown>
                 </template>
             </view>
-            <view class="tag-info">
-                <TopicTag :item="detail"></TopicTag>
+            <view class="tag-wrap">
+                <v-tag :item="detail"></v-tag>
             </view>
-            <view class="divider"></view>
+            <template v-if="hotData.length">
+                <uv-gap height="20rpx" bgColor="#f5f5f5"></uv-gap>
+                <view class="base-padding hot-data">
+                    <v-section title="热门回复"></v-section>
+                </view>
+                <view class="reply-wrap">
+                    <uv-skeletons :loading="loading" :skeleton="skeletonReply">
+                        <v-reply-item
+                            v-for="item in hotData"
+                            :key="item.index"
+                            :item="item"
+                        ></v-reply-item>
+                    </uv-skeletons>
+                </view>
+            </template>
+            <uv-gap height="20rpx" bgColor="#f5f5f5"></uv-gap>
             <uv-sticky offset-top="0">
                 <view class="reply-option" v-if="total">
                     <uv-text
@@ -73,49 +90,38 @@
                     </view>
                 </view>
             </uv-sticky>
-            <view
-                v-for="item in data"
-                :key="item.index"
-                :class="item.author"
-                class="reply-wrap"
-            >
-                <view class="user-info">
-                    <AuthorInfo :item="item"></AuthorInfo>
-                    <view class="floor">
-                        {{ `${item.index}楼` }}
-                    </view>
-                </view>
-                <view class="md-wrap">
-                    <view class="quote-wrap" v-if="item.quote">
-                        <MarkDown :content="item.quote"></MarkDown>
-                    </view>
-                    <MarkDown :content="item.content"></MarkDown>
-                </view>
+            <view class="reply-wrap">
+                <uv-skeletons :loading="loading" :skeleton="skeletonReply">
+                    <v-reply-item
+                        v-for="item in data"
+                        :key="item.index"
+                        :item="item"
+                    ></v-reply-item>
+                </uv-skeletons>
             </view>
             <!-- #ifdef MP-WEIXIN -->
             <ad unit-id="adunit-6996f541fca34984"></ad>
             <!-- #endif -->
             <uv-load-more
                 v-if="isLastPage && !loading"
-                :nomoreText="useRandomText('more')"
                 status="nomore"
                 height="60"
             />
-            <uv-safe-bottom></uv-safe-bottom>
         </template>
     </view>
 </template>
 <script setup>
-import { getCurrentInstance, onMounted, ref, toRaw, watch } from 'vue';
+import { onMounted, ref, toRaw } from 'vue';
 import { $getTopicDetail } from '@/service';
 import { onPageScroll, onPullDownRefresh } from '@dcloudio/uni-app';
 import { useIndexStore } from '@/stores';
 import { usePagination } from '@alova/scene-vue';
-import AuthorInfo from '@/components/AuthorInfo.vue';
+import VAuthor from '@/components/v-author.vue';
 import MarkDown from '@/components/MarkDown.vue';
-import TopicTag from '@/components/TopicTag.vue';
-import { useRandomText } from '@/hooks';
 import { storeToRefs } from 'pinia';
+import VTag from '@/components/v-tag.vue';
+import VSection from '@/components/v-section.vue';
+import VReplyItem from '@/components/v-reply-item.vue';
 
 const props = defineProps(['id']);
 const store = useIndexStore();
@@ -145,6 +151,36 @@ const detail = ref({
     subtle_list: []
 });
 
+const skeletonReply = [
+    {
+        type: 'flex',
+        num: 1,
+        children: [
+            {
+                type: 'custom',
+                num: 1,
+                style: 'width:60rpx;height:60rpx;marginRight: 20rpx;'
+            },
+            {
+                type: 'line',
+                num: 2,
+                gap: 10,
+                style: [
+                    'width:160rpx;height: 25rpx',
+                    'width:100rpx;height: 25rpx'
+                ]
+            }
+        ]
+    },
+    20,
+    {
+        type: 'line',
+        num: 3,
+        gap: 10,
+        style: 'width:calc(100% - 80rpx);marginLeft: 80rpx'
+    }
+];
+
 onMounted(() => {
     detail.value = {
         ...detail.value,
@@ -170,15 +206,13 @@ function handleChange(index) {
 const {
     data,
     loading,
-    fetching,
     send,
     error,
     reload,
     total,
     page,
     isLastPage,
-    onSuccess,
-    onComplete
+    onSuccess
 } = usePagination(
     (page, pageSize) => $getTopicDetail({ id: props.id, p: page }),
     {
@@ -234,6 +268,9 @@ onSuccess(({ data: res }) => {
         opData.value = JSON.parse(JSON.stringify(toRaw(data.value))).filter(
             item => item.is_master
         );
+        hotData.value = JSON.parse(JSON.stringify(toRaw(data.value))).filter(
+            item => item.like_num >= 10
+        );
     }
 });
 
@@ -242,138 +279,47 @@ onPageScroll(e => {
     // #ifdef APP-NVUE
     scrollTop.value = e.detail.scrollTop;
     // #endif
-    console.log(isLastPage && !loading);
 });
 
 onPullDownRefresh(reload);
 </script>
-<style lang="less" scoped>
-text {
-    user-select: text;
-}
-
-@keyframes skeleton-loading {
-    0% {
-        background-position: 100% 50%;
-    }
-    50% {
-        background-position: 0 50%;
-    }
-    100% {
-        background-position: 0 50%;
-    }
-}
-
-.loading {
-    background: linear-gradient(90deg, #f2f2f2 25%, #e6e6e6 37%, #f2f2f2 63%);
-    background-size: 400% 100%;
-    height: 100%;
-    animation: skeleton-loading 2.8s ease infinite;
-}
-
-.subtle-wrap {
-    background: #f9f9f9;
-    color: #666;
-    padding: 25rpx 30rpx;
-
-    .title {
-        font-size: 26rpx;
-        margin-bottom: 10rpx;
-    }
-
-    .content {
-        margin-bottom: 30rpx;
-        padding-bottom: 30rpx;
-        border-bottom: 2rpx solid #f5f5f5;
-
-        &:last-child {
-            border-bottom: 0;
-            margin-bottom: 0;
-            padding-bottom: 0;
-        }
-    }
+<style lang="scss" scoped>
+.base-padding {
+    padding: 20rpx 30rpx;
 }
 
 .topic-wrap {
-    padding: 25rpx 30rpx;
-    background: #fff;
-
     .title {
         font-size: 32rpx;
-        color: #333;
+        color: $uv-main-color;
         line-height: 45rpx;
         font-weight: bold;
         margin: 20rpx 0;
     }
 }
 
-.tag-info {
+.tag-wrap {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 25rpx 30rpx;
-    background: #fff;
-}
-
-.divider {
-    height: 20rpx;
-    background: #f5f5f5;
-}
-
-.floor {
-    color: #999;
-    font-size: 22rpx;
+    padding: 0 30rpx 25rpx;
 }
 
 .reply-option {
     background: #fff;
     height: 70rpx;
     padding: 0 30rpx;
-    border-bottom: 1px solid #f5f5f5;
-    border-top: 1px solid #f5f5f5;
+    border-bottom: 1px solid $uv-bg-color;
+    border-top: 1px solid $uv-bg-color;
     display: flex;
     align-items: center;
     justify-content: space-between;
-
-    .reply-num {
-        color: #666;
-        font-size: 24rpx;
-        font-weight: 400;
-    }
 }
 
+.hot-data {
+    border-bottom: 1px solid $uv-bg-color;
+}
 .reply-wrap {
-    padding: 25rpx 0 0 30rpx;
-
-    .user-info {
-        display: flex;
-        justify-content: space-between;
-        padding-right: 30rpx;
-    }
-
-    .md,
-    .quote {
-        margin-left: 80rpx;
-        padding-bottom: 25rpx;
-        padding-right: 30rpx;
-    }
-
-    .md-wrap {
-        margin-left: 80rpx;
-        padding-bottom: 25rpx;
-        padding-right: 30rpx;
-        border-bottom: 1px solid #f5f5f5;
-    }
-
-    .quote-wrap {
-        background: #f9f9f9;
-        padding: 20rpx 20rpx 0;
-        margin-right: 30rpx;
-        margin-bottom: 20rpx;
-    }
-
-    .user-info {
-        margin-bottom: 10rpx;
-    }
+    padding: 25rpx 30rpx 0;
 }
 </style>

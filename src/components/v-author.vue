@@ -7,7 +7,7 @@
             :src="props.item.avatar"
             @click.stop.prevent="getUserTopic(props.item.author)"
         ></uv-avatar>
-        <view>
+        <view class="info">
             <view class="flex">
                 <view
                     class="name"
@@ -33,6 +33,9 @@
                     props.item.publish_time ||
                     props.item.reply_time
                 }}
+                <template v-if="props.item.last_reply_time">
+                    {{ props.item.replyer }} 回复
+                </template>
             </view>
         </view>
     </view>
@@ -54,8 +57,10 @@ function getUserTopic(username) {
     .avatar {
         width: 60rpx;
         height: 60rpx;
-        margin-right: 20rpx;
         border-radius: 8rpx;
+    }
+    .info {
+        margin-left: 20rpx;
     }
 
     .flex {

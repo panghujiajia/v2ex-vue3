@@ -1,47 +1,47 @@
 // 主页的热门节点
 export default [
     {
-        title: 'Top10',
+        name: 'Top10',
         value: 'top'
     },
     {
-        title: '全部',
+        name: '全部',
         value: 'all'
     },
     {
-        title: '技术',
+        name: '技术',
         value: 'tech'
     },
     {
-        title: '创意',
+        name: '创意',
         value: 'creative'
     },
     {
-        title: '好玩',
+        name: '好玩',
         value: 'play'
     },
     {
-        title: 'Apple',
+        name: 'Apple',
         value: 'apple'
     },
     {
-        title: '酷工作',
+        name: '酷工作',
         value: 'jobs'
     },
     {
-        title: '交易',
+        name: '交易',
         value: 'deals'
     },
     {
-        title: '城市',
+        name: '城市',
         value: 'city'
     },
     {
-        title: '问与答',
+        name: '问与答',
         value: 'qna'
     },
     {
-        title: '最热',
+        name: '最热',
         value: 'hot'
     }
 ];

@@ -24,7 +24,7 @@
     </view>
 </template>
 <script setup>
-import Topic from '@/components/Topic.vue';
+import Topic from '@/components/v-topic.vue';
 import LoadFaild from '@/components/LoadFailed.vue';
 import NoMore from '@/components/NoMore';
 import { useIndexStore } from '../stores';

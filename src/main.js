@@ -13,6 +13,11 @@ export function createApp() {
     app.use(pinia);
     app.use(uvUI);
     uni.$uv.setConfig({
+        // 修改$uv.config对象的属性
+        config: {
+            // 修改默认单位为rpx，相当于执行 uni.$uv.config.unit = 'rpx'
+            unit: 'px'
+        },
         // 修改$uv.props对象的属性
         props: {
             // 修改uv-text组件的size参数的默认值，注意：默认值都要用default声明
@@ -21,6 +26,8 @@ export function createApp() {
                     default: 'red'
                 }
             }
+            // 其他组件属性配置，具体的参数名称可以去每个组件的props.js中进行查看
+            // ......
         }
     });
     return {
