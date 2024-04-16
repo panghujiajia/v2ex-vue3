@@ -87,6 +87,7 @@
                             :current="current"
                             custom-style="border-radius: 30rpx;"
                             custom-item-style="border-radius: 30rpx;"
+                            activeColor="#02B386"
                             @change="handleChange"
                         ></uv-subsection>
                     </view>

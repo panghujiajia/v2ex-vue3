@@ -1,13 +1,13 @@
 {
     "tabBar": {
-        "color": "#999999",
-        "selectedColor": "#4474FF",
+        "color": "#444444",
+        "selectedColor": "#02B386",
         // #ifndef MP-WEIXIN
-        "borderStyle": "#f0f0f0",
+        "borderStyle": "#ffffff",
         // #endif
 
         // #ifdef MP-WEIXIN
-        "borderStyle": "black",
+        "borderStyle": "white",
         // #endif
         "backgroundColor": "#ffffff",
         "list": [
@@ -42,7 +42,12 @@
             }
         },
         {
-            "path": "pages/All"
+            "path": "pages/All",
+            "style": {
+                // #ifdef H5
+                "navigationStyle": "custom"
+                // #endif H5
+            }
         },
         {
             "path": "pages/My",
@@ -67,53 +72,28 @@
         {
             "path": "pages/UserTopic",
             "style": {
-                "enablePullDownRefresh": true,
-                // #ifdef H5
-                "navigationStyle": "custom"
-                // #endif H5
-            }
+                "enablePullDownRefresh": true
         },
         {
             "path": "pages/UserMessage",
             "style": {
-                "enablePullDownRefresh": true,
-                // #ifdef H5
-                "navigationStyle": "custom"
-                // #endif H5
+                "enablePullDownRefresh": true
             }
         },
         {
             "path": "pages/UserReply",
             "style": {
-                "enablePullDownRefresh": true,
-                // #ifdef H5
-                "navigationStyle": "custom"
-                // #endif H5
+                "enablePullDownRefresh": true
             }
         },
         {
-            "path": "pages/History",
-            "style": {
-                // #ifdef H5
-                "navigationStyle": "custom"
-                // #endif H5
-            }
+            "path": "pages/History"
         },
         {
-            "path": "pages/About",
-            "style": {
-                // #ifdef H5
-                "navigationStyle": "custom"
-                // #endif H5
-            }
+            "path": "pages/About"
         },
         {
-            "path": "pages/Login",
-            "style": {
-                // #ifdef H5
-                "navigationStyle": "custom"
-                // #endif H5
-            }
+            "path": "pages/Login"
         }
     ],
     "globalStyle": {

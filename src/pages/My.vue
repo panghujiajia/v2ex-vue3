@@ -139,13 +139,13 @@
                 <view>重新登录</view>
                 <view class="icon-arrow"></view>
             </view>
-            <view
-                class="cell van-hairline--bottom"
-                @click="navigateTo('about')"
-            >
-                <view>关于</view>
-                <view class="icon-arrow"></view>
-            </view>
+            <!--            <view-->
+            <!--                class="cell van-hairline&#45;&#45;bottom"-->
+            <!--                @click="navigateTo('about')"-->
+            <!--            >-->
+            <!--                <view>关于</view>-->
+            <!--                <view class="icon-arrow"></view>-->
+            <!--            </view>-->
             <!-- #ifdef MP-WEIXIN -->
             <ad unit-id="adunit-5dede007095ed080"></ad>
             <!-- #endif -->

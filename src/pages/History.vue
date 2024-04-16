@@ -1,6 +1,12 @@
 <template>
     <view class="container">
-        <LoadFaild v-if="!historyTopic.length" :status="false"></LoadFaild>
+        <uv-empty
+            v-if="!historyTopic.length"
+            icon="https://img01.yzcdn.cn/vant/empty-image-default.png"
+            text="暂无记录"
+            style="padding-top: 160px"
+        >
+        </uv-empty>
         <scroll-view
             v-else
             :scroll-y="true"
@@ -17,26 +23,21 @@
                 class="item"
                 @click.stop="getTopicsDetail(item)"
             >
-                <Topic :item="item"></Topic>
+                <v-topic :item="item"></v-topic>
             </view>
-            <NoMore>只展示最近访问的30条</NoMore>
+            <uv-load-more status="nomore" height="60" />
         </scroll-view>
     </view>
 </template>
 <script setup>
-import Topic from '@/components/v-topic.vue';
-import LoadFaild from '@/components/LoadFailed.vue';
 import NoMore from '@/components/NoMore';
 import { useIndexStore } from '../stores';
 import { storeToRefs } from 'pinia';
+import VTopic from '@/components/v-topic.vue';
+import { getTopicsDetail } from '@/hooks';
 
 const store = useIndexStore();
 let { historyTopic } = storeToRefs(store);
-function getTopicsDetail(id) {
-    uni.navigateTo({
-        url: `/pages/Detail?id=${id}`
-    });
-}
 </script>
 <style lang="less" scoped>
 .container {

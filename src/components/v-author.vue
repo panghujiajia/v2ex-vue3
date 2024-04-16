@@ -49,7 +49,7 @@ function getUserTopic(username) {
     });
 }
 </script>
-<style lang="less" scoped>
+<style lang="scss" scoped>
 .author-info {
     display: flex;
     align-items: center;
@@ -72,19 +72,19 @@ function getUserTopic(username) {
         font-size: 28rpx;
         font-family: PingFangSC-Medium, PingFang SC;
         font-weight: 500;
-        color: #666666;
+        color: $uv-content-color;
     }
 
     .time {
         font-size: 22rpx;
         font-family: PingFangSC-Regular, PingFang SC;
         font-weight: 400;
-        color: #999999;
+        color: $uv-tips-color;
     }
 
     .op {
-        border: 2rpx solid #1484cd;
-        color: #1484cd;
+        border: 2rpx solid $uv-primary;
+        color: $uv-primary;
         font-size: 20rpx;
         border-radius: 5rpx;
         font-weight: 500;

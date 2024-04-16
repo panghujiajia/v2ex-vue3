@@ -6,7 +6,9 @@
         </view>
         <view class="topic-info">
             <v-tag :item="item"></v-tag>
-            <view class="reply">{{ item.reply_num }}条回复</view>
+            <view class="reply" v-if="item.reply_num">
+                {{ item.reply_num }}条回复
+            </view>
         </view>
     </view>
 </template>
@@ -18,7 +20,7 @@ import VTag from '@/components/v-tag.vue';
 const props = defineProps(['item']);
 const { item } = toRefs(props);
 </script>
-<style lang="less" scoped>
+<style lang="scss" scoped>
 .visited {
     opacity: 0.6;
     //filter: opacity(60%);
@@ -42,7 +44,7 @@ const { item } = toRefs(props);
         font-size: 32rpx;
         font-family: PingFangSC-Medium, PingFang SC;
         font-weight: 500;
-        color: #333333;
+        color: $uv-main-color;
         line-height: 45rpx;
         margin: 10rpx 0;
     }
@@ -58,7 +60,7 @@ const { item } = toRefs(props);
             font-size: 22rpx;
             font-family: PingFangSC-Regular, PingFang SC;
             font-weight: 400;
-            color: #999999;
+            color: $uv-tips-color;
         }
     }
 }

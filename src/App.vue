@@ -26,12 +26,6 @@ page {
     /* #endif */
     font-family: PingFangSC-Regular, PingFang SC;
 }
-//* /deep/.uni-scroll-view::-webkit-scrollbar {
-//    height: 0;
-//    width: 0;
-//    background: transparent;
-//    display: none;
-//}
 view {
     margin: 0;
     padding: 0;

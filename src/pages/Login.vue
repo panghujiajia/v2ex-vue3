@@ -49,9 +49,14 @@
                 </view>
             </view>
             <view class="promise">
-                我发誓，没有记录您任何信息，所有内容均存储在本地
+                本项目无数据库，所有存储均在本地，不会记录您的任何信息
             </view>
-            <view class="btn-default" @click="login()">登录</view>
+            <uv-button
+                @click="login()"
+                type="primary"
+                class="btn"
+                text="登录"
+            ></uv-button>
         </view>
     </view>
 </template>
@@ -59,7 +64,8 @@
 import { storeToRefs } from 'pinia';
 import { ref } from 'vue';
 import { onShow } from '@dcloudio/uni-app';
-import { $getLoginParams, $login } from '../service';
+import { $getLoginParams, $login } from '@/service';
+import { useIndexStore } from '@/stores';
 
 const store = useIndexStore();
 
@@ -256,8 +262,9 @@ async function login() {
     padding: 10rpx 20rpx;
     margin-top: 15rpx;
 }
-.btn-default {
+.btn {
     width: 660rpx;
+    margin: 0 auto;
     border-radius: 10rpx;
     margin-top: 15rpx;
 }

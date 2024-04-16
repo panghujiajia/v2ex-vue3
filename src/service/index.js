@@ -29,9 +29,14 @@ export const $getTopicDetail = ({ id, p }) => {
 };
 
 export const $getLoginParams = () => {
-    return useSetMeta($http.Get(`/login/params`), {
-        loading: false
-    });
+    return useSetMeta(
+        $http.Get(`/login/params`, {
+            localCache: null
+        }),
+        {
+            loading: false
+        }
+    );
 };
 
 export const $login = params => {

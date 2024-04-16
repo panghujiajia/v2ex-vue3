@@ -1,31 +1,20 @@
 <template>
     <view class="container">
-        <view>你好，我是一名前端开发。</view>
         <view>
-            做这个小程序的目的是方便在移动设备上看帖，同时也给自己在技术上的成长。
-        </view>
-        <view>
-            如果你有任何问题、意见想与我交流探讨，你可以通过复制我的
+            本项目技术栈为uni-app+vue3+pinia+alova
             <text class="link" @click="setClipboard(wechat, 'wechat')">
                 微信号
             </text>
             联系我。
         </view>
         <view>
-            同时，我也将小程序的
-            <text class="link" @click="setClipboard(v2exVue2, 'github')">
-                前端代码(vue2版本)</text
-            >
             <text class="link" @click="setClipboard(v2exVue3, 'github')">
-                前端代码(vue3重构版)</text
-            >
-            和
+                前端代码(vue3重构版)
+            </text>
             <text class="link" @click="setClipboard(v2exApi, 'github')">
-                后端代码</text
-            >
-            放在了我的github，感兴趣的可以复制链接查看。
+                后端代码
+            </text>
         </view>
-        <view>希望你也可以给我个star，谢谢！</view>
     </view>
 </template>
 <script setup>
