@@ -75,7 +75,7 @@
                             </text>
                         </view>
                     </view>
-                    <view class="message-content">
+                    <view class="message-content" v-if="item.content">
                         <MarkDown :content="item.content"></MarkDown>
                     </view>
                 </view>
@@ -90,6 +90,7 @@ import MarkDown from '@/components/MarkDown.vue';
 import LoadFaild from '@/components/LoadFailed.vue';
 import { reactive, ref } from 'vue';
 import { onLoad, onPullDownRefresh, onReachBottom } from '@dcloudio/uni-app';
+import { useIndexStore } from '@/stores';
 
 let loading = ref(true);
 let noMore = ref(false);
@@ -182,26 +183,17 @@ function loadMore() {
     getList();
 }
 </script>
-<style lang="less" scoped>
+<style lang="scss" scoped>
 .list-wrap {
     .item {
         font-size: 28rpx;
         padding: 25rpx 30rpx;
         background: #fff;
-        /deep/.user-name {
-            color: #4474ff;
-            view {
-                color: #4474ff;
-            }
-            ._hover {
-                text-decoration: none;
-            }
-        }
         .gray {
             color: #666;
         }
         .light {
-            color: #4474ff;
+            color: $uv-primary;
             font-weight: 500;
         }
         .message-info {
@@ -223,8 +215,8 @@ function loadMore() {
             }
         }
         .message-content {
-            background: #f9f9f9;
-            padding: 10rpx 20rpx;
+            background: $uv-bg-color;
+            padding: 20rpx;
         }
     }
 }

@@ -116,7 +116,6 @@ export const useIndexStore = defineStore(
         ];
 
         const autoSign = ref(false);
-        const autoNavigate = ref(true);
         const cookie = ref('');
         const toastTitle = ref('');
         const notifications = ref(0);
@@ -137,10 +136,6 @@ export const useIndexStore = defineStore(
 
         function updateVisited(id) {
             visited.value.push(id);
-        }
-
-        function toggleAutoNavigate(data) {
-            autoNavigate.value = data;
         }
 
         function changeTabIndex(index) {
@@ -263,7 +258,6 @@ export const useIndexStore = defineStore(
             currentTabName,
             tabs,
             autoSign,
-            autoNavigate,
             cookie,
             toastTitle,
             notifications,
@@ -285,7 +279,6 @@ export const useIndexStore = defineStore(
             getLoginReward,
             getLoginRewardInfo,
             getUserBalance,
-            toggleAutoNavigate,
             saveHistoryTopics,
             saveNotifications,
             getUserNotifications

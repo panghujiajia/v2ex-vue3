@@ -149,26 +149,17 @@ function loadMore() {
     getList();
 }
 </script>
-<style lang="less" scoped>
+<style lang="scss" scoped>
 .list-wrap {
     .item {
         font-size: 28rpx;
         padding: 25rpx 30rpx;
         background: #fff;
-        /deep/.user-name {
-            color: #4474ff;
-            view {
-                color: #4474ff;
-            }
-            ._hover {
-                text-decoration: none;
-            }
-        }
         .gray {
             color: #666;
         }
         .light {
-            color: #4474ff;
+            color: $uv-primary;
             font-weight: 500;
         }
         .reply-info {
@@ -183,8 +174,8 @@ function loadMore() {
             }
         }
         .reply-content {
-            background: #f9f9f9;
-            padding: 10rpx 20rpx;
+            background: $uv-bg-color;
+            padding: 20rpx;
         }
     }
 }

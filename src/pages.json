@@ -73,6 +73,7 @@
             "path": "pages/UserTopic",
             "style": {
                 "enablePullDownRefresh": true
+            }
         },
         {
             "path": "pages/UserMessage",

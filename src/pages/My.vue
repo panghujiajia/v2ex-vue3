@@ -56,100 +56,130 @@
                 <view v-else class="btn-sign" @click="getSignIn()"> 签到 </view>
             </view>
         </view>
-        <view class="cell-group">
-            <view
-                class="cell van-hairline--bottom"
+        <uv-cell-group
+            :border="false"
+            customStyle="background:#fff;margin: -250rpx 30rpx 0;border-radius: 20rpx;"
+        >
+            <uv-cell
+                isLink
+                size="large"
+                title="访问记录"
                 @click="navigateTo('history')"
             >
-                <view>访问记录</view>
-                <view class="icon-arrow"></view>
-            </view>
-            <view
-                class="cell van-hairline--bottom"
+                <template v-slot:icon>
+                    <uv-icon
+                        name="shijian"
+                        size="20"
+                        custom-prefix="v2ex"
+                    ></uv-icon>
+                </template>
+            </uv-cell>
+            <uv-cell
+                isLink
                 @click="navigateTo('topic', true)"
+                size="large"
+                title="我的主题"
             >
-                <view>我的主题</view>
-                <view class="icon-arrow"></view>
-            </view>
-            <view
-                class="cell van-hairline--bottom"
+                <template v-slot:icon>
+                    <uv-icon
+                        name="audit"
+                        size="20"
+                        custom-prefix="v2ex"
+                    ></uv-icon>
+                </template>
+            </uv-cell>
+            <uv-cell
+                isLink
+                size="large"
+                title="我的回复"
                 @click="navigateTo('reply', true)"
             >
-                <view>我的回复</view>
-                <view class="icon-arrow"></view>
-            </view>
-            <view
-                class="cell van-hairline--bottom"
+                <template v-slot:icon>
+                    <uv-icon
+                        name="qianshuxieyi"
+                        size="20"
+                        custom-prefix="v2ex"
+                    ></uv-icon>
+                </template>
+            </uv-cell>
+            <uv-cell
+                isLink
+                size="large"
+                title="我的消息"
                 @click="navigateTo('message', true)"
+                :border="false"
             >
-                <view>我的消息</view>
-                <view class="dot-wrap">
-                    <view v-if="notifications" class="dot">
-                        {{ notifications }}
-                    </view>
-                    <view class="icon-arrow"></view>
-                </view>
-            </view>
-            <!--            <view-->
-            <!--                class="cell van-hairline&#45;&#45;bottom"-->
-            <!--                @click="navigateTo('collect', true)"-->
-            <!--            >-->
-            <!--                <view>我的收藏</view>-->
-            <!--                <view class="icon-arrow"></view>-->
-            <!--            </view>-->
-            <view class="cell van-hairline--bottom">
-                <view>自动签到</view>
-                <switch
-                    :checked="autoSign"
-                    color="#ffc413"
-                    disabled
-                    @click="onAutoSignChange"
-                />
-            </view>
-            <view class="cell van-hairline--bottom">
-                <view>
-                    <view>站内链接跳转</view>
-                    <view class="tip">
-                        点击"/t/1024、/go/v2ex"，打开对应帖子、节点
-                    </view>
-                </view>
-                <switch
-                    :checked="autoNavigate"
-                    color="#ffc413"
-                    disabled
-                    @click="onAutoNavigateChange"
-                />
-            </view>
-            <!--            <view class="cell van-hairline&#45;&#45;bottom">-->
-            <!--                <view>-->
-            <!--                    <view>使用我的代理</view>-->
-            <!--                    <view class="tip">直接请求v2ex官网，速度更快</view>-->
-            <!--                </view>-->
-            <!--                <switch-->
-            <!--                    :checked="autoNavigate"-->
-            <!--                    color="#ffc413"-->
-            <!--                    @change="onAutoNavigateChange"-->
-            <!--                />-->
-            <!--            </view>-->
-            <view
+                <template v-slot:icon>
+                    <uv-icon
+                        name="xiaoxi-zhihui"
+                        size="20"
+                        custom-prefix="v2ex"
+                    ></uv-icon>
+                </template>
+                <template v-slot:value>
+                    <uv-badge
+                        type="error"
+                        max="99"
+                        :value="notifications"
+                    ></uv-badge>
+                </template>
+            </uv-cell>
+        </uv-cell-group>
+        <uv-gap height="20"></uv-gap>
+        <uv-cell-group
+            :border="false"
+            customStyle="background:#fff;margin: 0 30rpx;border-radius: 20rpx;box-shadow: 0 5rpx 20rpx #dedede;"
+        >
+            <uv-cell size="large" title="自动签到">
+                <template v-slot:icon>
+                    <uv-icon
+                        name="zhiwen"
+                        size="20"
+                        custom-prefix="v2ex"
+                    ></uv-icon>
+                </template>
+                <template v-slot:value>
+                    <uv-switch
+                        size="20"
+                        v-model="autoSign"
+                        activeColor="#02B386"
+                    ></uv-switch>
+                </template>
+            </uv-cell>
+            <uv-cell
                 v-if="cookie"
-                class="cell van-hairline--bottom"
-                @click="login()"
+                @click="logout()"
+                size="large"
+                title="退出"
+                :border="false"
             >
-                <view>重新登录</view>
-                <view class="icon-arrow"></view>
-            </view>
-            <!--            <view-->
-            <!--                class="cell van-hairline&#45;&#45;bottom"-->
-            <!--                @click="navigateTo('about')"-->
-            <!--            >-->
-            <!--                <view>关于</view>-->
-            <!--                <view class="icon-arrow"></view>-->
-            <!--            </view>-->
-            <!-- #ifdef MP-WEIXIN -->
-            <ad unit-id="adunit-5dede007095ed080"></ad>
-            <!-- #endif -->
-        </view>
+                <template v-slot:icon>
+                    <uv-icon
+                        name="logout"
+                        size="20"
+                        custom-prefix="v2ex"
+                    ></uv-icon>
+                </template>
+            </uv-cell>
+            <uv-cell
+                v-else
+                @click="login()"
+                size="large"
+                title="登录"
+                :border="false"
+            >
+                <template v-slot:icon>
+                    <uv-icon
+                        name="login"
+                        size="20"
+                        custom-prefix="v2ex"
+                    ></uv-icon>
+                </template>
+            </uv-cell>
+        </uv-cell-group>
+        <!-- #ifdef MP-WEIXIN -->
+        <ad unit-id="adunit-5dede007095ed080"></ad>
+        <!-- #endif -->
     </scroll-view>
 </template>
 
@@ -159,21 +189,8 @@ import { useIndexStore } from '@/stores';
 
 const store = useIndexStore();
 
-let {
-    autoSign,
-    autoNavigate,
-    cookie,
-    currentTabBar,
-    toastTitle,
-    notifications,
-    v2exConfig,
-    userInfo
-} = storeToRefs(store);
-
-function onAutoNavigateChange() {
-    uni.vibrateShort({});
-    store.toggleAutoNavigate(!autoNavigate.value);
-}
+let { autoSign, cookie, toastTitle, notifications, v2exConfig, userInfo } =
+    storeToRefs(store);
 
 function getSignIn() {
     if (!cookie.value) {
@@ -184,6 +201,27 @@ function getSignIn() {
         return;
     }
     store.getLoginReward();
+}
+
+function logout() {
+    if (cookie.value) {
+        uni.showModal({
+            title: '确定退出吗？',
+            success: res => {
+                console.log(res);
+                if (res.confirm) {
+                    store.saveCookie('');
+                    store.saveNotifications(0);
+                    login();
+                }
+            }
+        });
+    } else {
+        uni.showToast({
+            title: '没登录',
+            icon: 'none'
+        });
+    }
 }
 function login() {
     uni.navigateTo({ url: '/pages/Login' });
@@ -352,86 +390,6 @@ function navigateTo(key, auth = false) {
                     background: #c3c3c3;
                 }
             }
-        }
-    }
-}
-.dot-wrap {
-    display: flex;
-    align-items: center;
-    .dot {
-        border-radius: 20rpx;
-        padding: 0 16rpx;
-        background: #fa5151;
-        color: #fff;
-        font-size: 22rpx;
-        font-weight: bold;
-    }
-}
-.cell-group {
-    background: #fff;
-    margin: 0 30rpx;
-    margin-top: -250rpx;
-    border-radius: 16rpx 16rpx 0 0;
-    position: relative;
-    box-sizing: border-box;
-    z-index: 2;
-    .tip {
-        color: #999;
-        font-size: 22rpx;
-    }
-    .icon-arrow {
-        position: relative;
-        width: 20rpx;
-        height: 20rpx;
-        &:after,
-        &:before {
-            content: '';
-            display: block;
-            position: absolute;
-            top: 0;
-            right: 0;
-            width: 2rpx;
-            height: 12rpx;
-            border-radius: 2rpx;
-            background: #ccc;
-            transform: rotateZ(-45deg);
-        }
-        &:after {
-            top: 8rpx;
-            transform: rotateZ(45deg);
-        }
-    }
-    .cell {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        height: 100rpx;
-        padding: 0 30rpx 0 40rpx;
-        box-sizing: border-box;
-        border-bottom: 1rpx solid #f0f0f0;
-        color: #282828;
-        font-size: 32rpx;
-        /deep/.uni-switch-input {
-            transform: scale(0.7);
-            margin-right: -10rpx;
-            &:after {
-                box-shadow: 0 0 4rpx rgb(0 0 0 / 40%);
-                height: 100%;
-            }
-            &:before {
-                height: 100%;
-                width: 100%;
-                background: #fff;
-            }
-            opacity: 1;
-        }
-        text {
-            font-size: 24rpx;
-            color: #999;
-            line-height: 100rpx;
-        }
-        &:last-child {
-            border-bottom: 0 none;
         }
     }
 }

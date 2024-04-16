@@ -11,11 +11,9 @@
 <script setup>
 import mpHtml from 'mp-html/dist/uni-app/components/mp-html/mp-html';
 import { useIndexStore } from '../stores';
-import { storeToRefs } from 'pinia';
 
 const props = defineProps(['content']);
 const store = useIndexStore();
-let { autoNavigate } = storeToRefs(store);
 
 function linkClick(e) {
     const { href, innerText } = e;
@@ -35,30 +33,28 @@ function linkClick(e) {
         //         .exec();
         //     return;
         // }
-        if (autoNavigate.value) {
-            // 链接为主题详情
-            if (href.indexOf('/t/') > -1) {
-                let id = href.split('/').pop();
-                if (!/^[0-9]*$/.test(id)) {
-                    if (id.includes('#')) {
-                        id = id.split('#').shift();
-                    } else {
-                        return;
-                    }
+        // 链接为主题详情
+        if (href.indexOf('/t/') > -1) {
+            let id = href.split('/').pop();
+            if (!/^[0-9]*$/.test(id)) {
+                if (id.includes('#')) {
+                    id = id.split('#').shift();
+                } else {
+                    return;
                 }
-                uni.navigateTo({
-                    url: `/pages/Detail?id=${id}`
-                });
-                return;
             }
-            // 链接为节点链接
-            if (href.indexOf('/go/') > -1) {
-                const val = href.split('/').pop();
-                uni.navigateTo({
-                    url: `/pages/Tag?value=${val}`
-                });
-                return;
-            }
+            uni.navigateTo({
+                url: `/pages/Detail?id=${id}`
+            });
+            return;
+        }
+        // 链接为节点链接
+        if (href.indexOf('/go/') > -1) {
+            const val = href.split('/').pop();
+            uni.navigateTo({
+                url: `/pages/Tag?value=${val}`
+            });
+            return;
         }
     }
     // #ifdef MP-WEIXIN
@@ -77,13 +73,12 @@ function linkClick(e) {
     // #endif
 }
 </script>
-<style lang="less" scoped>
-/deep/ .user-name {
-    color: #999;
-
+<style lang="scss" scoped>
+::v-deep(.user-name) {
+    color: $uv-main-color;
     view,
     text {
-        color: #999;
+        color: $uv-main-color;
     }
 
     ._hover {
